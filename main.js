@@ -27,7 +27,7 @@ try{
         console.dir(res)
         setInterval(() => {
             const {week, weekday} = weekJudge()
-            let message = new Discord.Message(client, `Week ${week<1 ? 'A' : week < 2 ? 'B': 'C'} Day ${parseInt(weekday)+1}`, client.channels.cache.get('835855745621819423'));
+            let message = new Discord.Message(client, {content: `Week ${week<1 ? 'A' : week < 2 ? 'B': 'C'} Day ${parseInt(weekday)+1}`}, client.channels.cache.get('835855745621819423'));
             message.crosspost()
                 .then(() => console.log('Crossposted message'))
                 .catch(console.error);
