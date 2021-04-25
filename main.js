@@ -40,12 +40,15 @@ function dailyComboQuery(week, weekday) {
                             if (err2) {
                                 reject(`Error: ${err2}`)
                             }
-                            rows2.forEach(video => {
-                                videos.push(`**${video.lord} Lord (${video.combo})** video from ${video.player} (Attacking Team: **${video.attackingCombo}, ${video.point} points**): ${video.uri}`)
-                            })
+                            if(rows2.length){
+                                rows2.push('Maxed versions:')
+                                rows2.forEach(video => {
+                                    videos.push(`**${video.lord} Lord (${video.combo})** video from ${video.player} (Attacking Team: **${video.attackingCombo}, ${video.point} points**): ${video.uri}`)
+                                })
+                            }
                         })
                     })
-                    combos.push('', 'Maxed versions:', ...videos)
+                    combos.push('', ...videos)
                     resolve(combos.join('\n'))
                 } else {
                     resolve('Not found, there are only 3 weeks (A, B, C) in a cycle and 5 days (1-5) in a week.')
