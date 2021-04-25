@@ -60,15 +60,16 @@ client.on("message", msg => {
         const videoArray = msg.content.split(" ").slice(1)
         if(videoArray.length < 6) {
             replyQueryMessages('need 6 parameters (lord text, combo text, player text, attackingCombo text, point integer, uri)')
+        } else {
+            db.run(`INSERT INTO video(lord, combo, player, attackingCombo, point, uri) VALUES(?, ?, ?, ?, ?, ?)`, videoArray, function(err) {
+                if (err) {
+                return console.log(err.message);
+                }
+                // get the last insert id
+                console.log(`A row has been inserted with rowid ${this.lastID}`)
+                replyQueryMessages(`Successfully added the video for ${videoArray[3]} from ${videoArray[2]}`)
+            })
         }
-        db.run(`INSERT INTO video(lord, combo, player, attackingCombo, point, uri) VALUES(?, ?, ?, ?, ?, ?)`, videoArray, function(err) {
-            if (err) {
-              return console.log(err.message);
-            }
-            // get the last insert id
-            console.log(`A row has been inserted with rowid ${this.lastID}`)
-            replyQueryMessages(`Successfully added the video for ${videoArray[3]} from ${videoArray[2]}`)
-        })
     } else if (msg.content === "!lord-time") {
         const {week, weekday} = weekJudge()
         replyQueryMessages(`Week ${week<1 ? 'A' : week < 2 ? 'B': 'C'} Day ${parseInt(weekday)+1}\n(Note both messages will be deleted in 1 min)`)
