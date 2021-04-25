@@ -65,14 +65,14 @@ client.on("message", msg => {
             try {
                 replyQueryMessages(dailyComboQuery(week, weekday))
             } catch {
-                console.error()
+                console.error
             }
         } else if(comboArray.length === 2) {
             const [week, weekday] = comboArray
             try {
                 replyQueryMessages(dailyComboQuery(week, weekday))
             } catch {
-                console.error()
+                console.error
             }
         } else {
             replyQueryMessages("Daily combo support only 0 or 2 parameters.")
@@ -91,7 +91,7 @@ try{
                 try {
                     channel.send(dailyComboQuery(week, weekday))
                 } catch {
-                    console.error()
+                    console.error
                 }
             }
         }, 1000)
