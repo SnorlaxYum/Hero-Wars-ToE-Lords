@@ -1,0 +1,9 @@
+{
+  "name": "hero-wars-toe-lords",
+  "version": "1.0.0",
+  "description": "load and get info about toe lords in hero wars",
+  "main": "index.js",
+  "repository": "https://github.com/SnorlaxYum/Hero-Wars-ToE-Lords.git",
+  "author": "Sim",
+  "license": "MIT"
+}
