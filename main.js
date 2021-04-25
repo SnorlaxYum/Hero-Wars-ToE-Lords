@@ -22,6 +22,25 @@ client.on("ready", () => {
 //   db.run('CREATE TABLE video(lord text, combo text, player text, attackingCombo text, point integer, uri text)')
 })
 
+function dailyComboQuery(week, weekday) {
+    if(weekday > 5) {
+        return 'ToE already ended...... (Note both messages will be deleted in 1 min)'
+    } else {
+        let sql = `SELECT lord, combo FROM combo WHERE week='${week}' AND day=${weekday};`
+        db.all(sql, [], (err, rows) => {
+            if (err) {
+              throw err;
+            }
+            if(rows.length) {
+                let combos = [`**Week ${week}, Day ${weekday}:**`, ...rows.map(row => `${row.lord} Lord: ${row.combo}`), '(Note both messages will be deleted in 1 min)']
+                return combos.join('\n')
+            } else {
+                return 'Not found, there are only 3 weeks (A, B, C) in a cycle and 5 days (1-5) in a week.\n(Note both messages will be deleted in 1 min)'
+            }
+        })
+    }
+}
+
 client.on("message", msg => {
     function replyQueryMessages(content, timeout=60*1000) {
         msg.reply(content).then(reply => {
@@ -33,24 +52,6 @@ client.on("message", msg => {
                 .catch(console.error)
         })
     }
-    function dailyComboQuery(week, weekday) {
-        if(weekday > 5) {
-            replyQueryMessages('ToE already ended...... (Note both messages will be deleted in 1 min)')
-        } else {
-            let sql = `SELECT lord, combo FROM combo WHERE week='${week}' AND day=${weekday};`
-            db.all(sql, [], (err, rows) => {
-                if (err) {
-                  throw err;
-                }
-                if(rows.length) {
-                    let combos = [`**Week ${week}, Day ${weekday}:**`, ...rows.map(row => `${row.lord} Lord: ${row.combo}`), '(Note both messages will be deleted in 1 min)']
-                    replyQueryMessages(combos.join('\n'))
-                } else {
-                    replyQueryMessages('Not found, there are only 3 weeks (A, B, C) in a cycle and 5 days (1-5) in a week.\n(Note both messages will be deleted in 1 min)')
-                }
-            })
-        }
-    }
     if (msg.content === "!ping") {
         msg.reply("pong");
     } else if (msg.content === "!lord-time") {
@@ -61,9 +62,18 @@ client.on("message", msg => {
         if(comboArray.length === 0) {
             const {week, weekday} = weekJudge()
             dailyComboQuery(week, weekday)
+            try {
+                replyQueryMessages(dailyComboQuery(week, weekday))
+            } catch {
+                console.error()
+            }
         } else if(comboArray.length === 2) {
             const [week, weekday] = comboArray
-            dailyComboQuery(week, weekday)
+            try {
+                replyQueryMessages(dailyComboQuery(week, weekday))
+            } catch {
+                console.error()
+            }
         } else {
             replyQueryMessages("Daily combo support only 0 or 2 parameters.")
         }
@@ -73,12 +83,17 @@ client.on("message", msg => {
 try{
     client.login(process.env.TOKEN).then(res => {
         console.log("Request success")
-        console.dir(res)
         setInterval(() => {
             const {week, weekday, time} = weekJudge()
             let channel = client.channels.cache.find(ch => ch.name === 'toe-daily')
             if(!channel) return
-            if(channel && time === 0) channel.send(`Week ${week<1 ? 'A' : week < 2 ? 'B': 'C'} Day ${parseInt(weekday)+1}`)
+            if(channel && time === 0) {
+                try {
+                    channel.send(dailyComboQuery(week, weekday))
+                } catch {
+                    console.error()
+                }
+            }
         }, 1000)
     }, rej => {
         console.log("Request rejection")
