@@ -123,7 +123,7 @@ try{
         console.log("Request success")
         setInterval(() => {
             const {week, weekday, time} = weekJudge()
-            let channels = [...client.channels.cache.values].filter(ch => ch.name === 'toe-daily')
+            let channels = [...client.channels.cache.values()].filter(ch => ch.name === 'toe-daily')
             if(!channel) return
             if(channels && time === 0) {
                 channels.forEach(channel => {
