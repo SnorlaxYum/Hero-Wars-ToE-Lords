@@ -66,12 +66,14 @@ function dailyComboQuery(week, weekday) {
 client.on("message", msg => {
     function replyQueryMessages(content, timeout=60*1000) {
         msg.reply(content).then(reply => {
-            reply.delete({timeout})
-                .then(msg1 => console.log(`Deleted message from ${msg1.author.username}.`))
-                .catch(console.error)
-            msg.delete({timeout})
-                .then(msg1 => console.log(`Deleted message from ${msg1.author.username}.`))
-                .catch(console.error)
+            if(timeout > 0) {
+                reply.delete({timeout})
+                    .then(msg1 => console.log(`Deleted message from ${msg1.author.username}.`))
+                    .catch(console.error)
+                msg.delete({timeout})
+                    .then(msg1 => console.log(`Deleted message from ${msg1.author.username}.`))
+                    .catch(console.error)
+            }
         })
     }
     if (msg.content === "!ping") {
@@ -98,16 +100,16 @@ client.on("message", msg => {
         if(comboArray.length === 0) {
             const {week, weekday} = weekJudge()
             dailyComboQuery(week, weekday).then(res => {
-                replyQueryMessages(res)
+                replyQueryMessages(res, -1)
             }, rej => {
-                replyQueryMessages(rej)
+                replyQueryMessages(rej, -1)
             })
         } else if(comboArray.length === 2) {
             const [week, weekday] = comboArray
             dailyComboQuery(week, weekday).then(res => {
-                replyQueryMessages(res)
+                replyQueryMessages(res, -1)
             }, rej => {
-                replyQueryMessages(rej)
+                replyQueryMessages(rej, -1)
             })
         } else {
             replyQueryMessages("Daily combo support only 0 or 2 parameters.")
