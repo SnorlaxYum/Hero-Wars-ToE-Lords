@@ -11,22 +11,51 @@ function weekJudge() {
     return {week, weekday, time}
 }
 
+function replyQueryMessages(msg, content, timeout) {
+    msg.reply(content).then(reply => {
+        reply.delete({timeout})
+            .then(msg1 => console.log(`Deleted message from ${msg1.author.username}.`))
+            .catch(console.error)
+        msg.delete({timeout})
+            .then(msg1 => console.log(`Deleted message from ${msg1.author.username}.`))
+            .catch(console.error)
+    })
+}
+
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`)
   db = new sqlite3.Database('./main.db', (err) => {
     if (err) {
-      console.error(err.message);
+      console.error(err.message)
     }
-    console.log('Connected to the main database.');
-  });
+    console.log('Connected to the main database.')
+  })
+//   db.run('CREATE TABLE video(lord text, combo text, player text, attackingCombo text, point integer, uri text)')
 })
 
 client.on("message", msg => {
-    if (msg.content === "ping") {
+    if (msg.content === "!ping") {
         msg.reply("pong");
-    } else if (msg.content === "lords") {
+    } else if (msg.content === "!lord-time") {
         const {week, weekday} = weekJudge()
         msg.reply(`Week ${week<1 ? 'A' : week < 2 ? 'B': 'C'} Day ${parseInt(weekday)+1}`)
+    } else if (msg.content.startsWith("!lord-daily-combo")) {
+        const comboArray = msg.content.split(" ").slice(1)
+        if(comboArray.length === 0) {
+            const {week, weekday} = weekJudge()
+            if(weekday >=5) {
+                replyQueryMessages('ToE already ended...... (Note both messages will be deleted in 1 min)')
+            } else {
+                let sql = `SELECT lord, combo FROM combo WHERE week=${week}, day=${weekday};`
+                db.all(sql, [], (err, rows) => {
+                    if (err) {
+                      throw err;
+                    }
+                    let combos = [`**Week ${week}, Day ${weekday}:**`, ...rows.map(row => `${row.lord} Lord: ${row.combo}`), '(Note both messages will be deleted in 1 min)']
+                    replyQueryMessages(msg, combos.join('\n'), 60*1000)
+                })
+            }
+        }
     }
 })
 
