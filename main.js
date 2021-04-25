@@ -1,5 +1,5 @@
 const Discord = require("discord.js")
-const client = new Discord.Client({restRequestTimeout:150000})
+const client = new Discord.Client()
 
 function weekJudge() {
     let pos = (new Date() - new Date('2021-04-12T13:00:00+0800'))
@@ -26,9 +26,9 @@ try{
         console.log("Request success")
         console.dir(res)
         setInterval(() => {
-            var guild = client.guilds.get(`snorlax's server`);
-            if(guild && guild.channels.get('toe-daily')){
-                guild.channels.get('toe-daily').send("Good Morning");
+            var guild = client.guilds.fetch(`s`)
+            if(guild && guild.channels.get('744191975913422979')){
+                guild.channels.get('744191975913422979').send("Good Morning");
             }
         }, 1000)
     }, rej => {
