@@ -37,7 +37,7 @@ client.on("message", msg => {
         msg.reply("pong");
     } else if (msg.content === "!lord-time") {
         const {week, weekday} = weekJudge()
-        msg.reply(`Week ${week<1 ? 'A' : week < 2 ? 'B': 'C'} Day ${parseInt(weekday)+1}`)
+        replyQueryMessages(`Week ${week<1 ? 'A' : week < 2 ? 'B': 'C'} Day ${parseInt(weekday)+1}`, 60*1000)
     } else if (msg.content.startsWith("!lord-daily-combo")) {
         const comboArray = msg.content.split(" ").slice(1)
         if(comboArray.length === 0) {
