@@ -6,9 +6,10 @@ let db
 // judge the position of the day in a ToE cycle
 function weekJudge() {
     let pos = (new Date() - new Date('2021-04-12T13:00:00+0800'))
-    let week = pos / (7* 24 * 60 * 60 * 1000) % 3
-    let weekday = (new Date() - new Date('2021-04-12T13:00:00+0800')) % (7* 24 * 60 * 60 * 1000) / (24*60*60*1000)
-    let time = (new Date() - new Date('2021-04-12T13:00:00+0800')) % (7* 24 * 60 * 60 * 1000) % (24*60*60*1000)
+    let week = pos / (7 * 24 * 60 * 60 * 1000) % 3
+    week = week < 1 ? 'A' : week < 2 ? 'B': 'C'
+    let weekday = parseInt(pos % (7 * 24 * 60 * 60 * 1000) / (24 * 60 * 60 * 1000)) + 1
+    let time = pos % (7 * 24 * 60 * 60 * 1000) % (24 * 60 * 60 * 1000)
     return {week, weekday, time}
 }
 
@@ -103,7 +104,7 @@ client.on("message", msg => {
         }
     } else if (msg.content === "!lord-time") {
         const {week, weekday} = weekJudge()
-        replyQueryMessages(`Week ${week<1 ? 'A' : week < 2 ? 'B': 'C'} Day ${parseInt(weekday)+1}\n(Note both messages will be deleted in 1 min)`)
+        replyQueryMessages(`Week ${week} Day ${weekday}\n(Note both messages will be deleted in 1 min)`)
     } else if (msg.content.startsWith("!lord-daily-combo")) {
         const comboArray = msg.content.split(" ").slice(1)
         if(comboArray.length === 0) {
