@@ -23,7 +23,7 @@ client.on("ready", () => {
 })
 
 client.on("message", msg => {
-    function replyQueryMessages(content, timeout) {
+    function replyQueryMessages(content, timeout=60*1000) {
         msg.reply(content).then(reply => {
             reply.delete({timeout})
                 .then(msg1 => console.log(`Deleted message from ${msg1.author.username}.`))
@@ -33,27 +33,35 @@ client.on("message", msg => {
                 .catch(console.error)
         })
     }
+    function dailyComboQuery(week, weekday) {
+        if(weekday >= 5) {
+            replyQueryMessages('ToE already ended...... (Note both messages will be deleted in 1 min)')
+        } else {
+            let sql = `SELECT lord, combo FROM combo WHERE week=${week}, day=${weekday};`
+            db.all(sql, [], (err, rows) => {
+                if (err) {
+                  throw err;
+                }
+                let combos = [`**Week ${week}, Day ${weekday}:**`, ...rows.map(row => `${row.lord} Lord: ${row.combo}`), '(Note both messages will be deleted in 1 min)']
+                replyQueryMessages(combos.join('\n'))
+            })
+        }
+    }
     if (msg.content === "!ping") {
         msg.reply("pong");
     } else if (msg.content === "!lord-time") {
         const {week, weekday} = weekJudge()
-        replyQueryMessages(`Week ${week<1 ? 'A' : week < 2 ? 'B': 'C'} Day ${parseInt(weekday)+1}`, 60*1000)
+        replyQueryMessages(`Week ${week<1 ? 'A' : week < 2 ? 'B': 'C'} Day ${parseInt(weekday)+1}\n(Note both messages will be deleted in 1 min)`)
     } else if (msg.content.startsWith("!lord-daily-combo")) {
         const comboArray = msg.content.split(" ").slice(1)
         if(comboArray.length === 0) {
             const {week, weekday} = weekJudge()
-            if(weekday >=5) {
-                replyQueryMessages('ToE already ended...... (Note both messages will be deleted in 1 min)', 60*1000)
-            } else {
-                let sql = `SELECT lord, combo FROM combo WHERE week=${week}, day=${weekday};`
-                db.all(sql, [], (err, rows) => {
-                    if (err) {
-                      throw err;
-                    }
-                    let combos = [`**Week ${week}, Day ${weekday}:**`, ...rows.map(row => `${row.lord} Lord: ${row.combo}`), '(Note both messages will be deleted in 1 min)']
-                    replyQueryMessages(combos.join('\n'), 60*1000)
-                })
-            }
+            dailyComboQuery(week, weekday)
+        } else if(comboArray.length === 2) {
+            const [week, weekday] = comboArray
+            dailyComboQuery(week, weekday)
+        } else {
+            replyQueryMessages("Daily combo support only 0 or 2 parameters.")
         }
     }
 })
