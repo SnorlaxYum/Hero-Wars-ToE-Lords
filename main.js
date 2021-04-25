@@ -17,7 +17,7 @@ client.on("message", msg => {
         msg.reply("pong");
     } else if (msg.content === "lords") {
         const {week, weekday} = weekJudge()
-        msg.content(`Week ${week<1 ? 'A' : week < 2 ? 'B': 'C'} Day ${parseInt(weekday)+1}`)
+        msg.reply(`Week ${week<1 ? 'A' : week < 2 ? 'B': 'C'} Day ${parseInt(weekday)+1}`)
     }
 })
 
