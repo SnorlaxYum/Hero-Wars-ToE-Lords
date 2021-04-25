@@ -29,7 +29,7 @@ function dailyComboQuery(week, weekday) {
         let sql = `SELECT lord, combo FROM combo WHERE week='${week}' AND day=${weekday};`
         db.all(sql, [], (err, rows) => {
             if (err) {
-              throw err;
+                return err
             }
             if(rows.length) {
                 let combos = [`**Week ${week}, Day ${weekday}:**`, ...rows.map(row => `${row.lord} Lord: ${row.combo}`), '(Note both messages will be deleted in 1 min)']
@@ -61,22 +61,10 @@ client.on("message", msg => {
         const comboArray = msg.content.split(" ").slice(1)
         if(comboArray.length === 0) {
             const {week, weekday} = weekJudge()
-            let message
-            try {
-                message = dailyComboQuery(week, weekday)
-                replyQueryMessages(message)
-            } catch(e) {
-                console.error(e)
-            }
+            replyQueryMessages(dailyComboQuery(week, weekday))
         } else if(comboArray.length === 2) {
             const [week, weekday] = comboArray
-            let message
-            try {
-                message = dailyComboQuery(week, weekday)
-                replyQueryMessages(message)
-            } catch(e) {
-                console.error(e)
-            }
+            replyQueryMessages(dailyComboQuery(week, weekday))
         } else {
             replyQueryMessages("Daily combo support only 0 or 2 parameters.")
         }
@@ -91,13 +79,7 @@ try{
             let channel = client.channels.cache.find(ch => ch.name === 'toe-daily')
             if(!channel) return
             if(channel && time === 0) {
-                let message
-                try {
-                    message = dailyComboQuery(week, weekday)
-                    channel.send(message)
-                } catch(e) {
-                    console.error(e)
-                }
+                channel.send(dailyComboQuery(week, weekday))
             }
         }, 1000)
     }, rej => {
