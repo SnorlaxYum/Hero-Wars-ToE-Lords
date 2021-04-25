@@ -12,14 +12,16 @@ function weekJudge() {
 }
 
 function replyQueryMessages(msg, content, timeout) {
-    msg.reply(content).then(reply => {
-        reply.delete({timeout})
-            .then(msg1 => console.log(`Deleted message from ${msg1.author.username}.`))
-            .catch(console.error)
-        msg.delete({timeout})
-            .then(msg1 => console.log(`Deleted message from ${msg1.author.username}.`))
-            .catch(console.error)
-    })
+    if(msg.reply){
+        msg.reply(content).then(reply => {
+            reply.delete({timeout})
+                .then(msg1 => console.log(`Deleted message from ${msg1.author.username}.`))
+                .catch(console.error)
+            msg.delete({timeout})
+                .then(msg1 => console.log(`Deleted message from ${msg1.author.username}.`))
+                .catch(console.error)
+        })
+    }
 }
 
 client.on("ready", () => {
