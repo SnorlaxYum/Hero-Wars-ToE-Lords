@@ -124,7 +124,7 @@ try{
         setInterval(() => {
             const {week, weekday, time} = weekJudge()
             let channels = [...client.channels.cache.values()].filter(ch => ch.name === 'toe-daily')
-            if(!channel) return
+            if(!channels) return
             if(channels && time === 0) {
                 channels.forEach(channel => {
                     dailyComboQuery(week, weekday).then(res => {
