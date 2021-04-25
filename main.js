@@ -80,6 +80,7 @@ client.on("message", msg => {
         msg.reply("pong");
     } else if (msg.content.startsWith("!lord-video-add")) {
         const videoArray = msg.content.split("[+++]").slice(1)
+        videoArray[5] = parseInt(videoArray[5])
         if(videoArray.length < 6) {
             replyQueryMessages('need 6 parameters (lord text, combo text, player text, attackingCombo text, point integer, uri)')
         } else {
