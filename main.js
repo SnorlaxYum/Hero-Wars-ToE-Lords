@@ -13,7 +13,7 @@ function weekJudge() {
 
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`)
-  db = new sqlite3.Database('./db/main.db', (err) => {
+  db = new sqlite3.Database('./main.db', (err) => {
     if (err) {
       console.error(err.message);
     }
