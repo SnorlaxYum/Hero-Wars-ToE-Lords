@@ -19,7 +19,7 @@ client.on("ready", () => {
     }
     console.log('Connected to the main database.')
   })
-  db.run('CREATE TABLE video(lord text, combo text, player text, attackingCombo text, point integer, uri text)')
+  db.run('CREATE TABLE IF NOT EXISTS video(lord text, combo text, player text, attackingCombo text, point integer, uri text)')
 })
 
 function dailyComboQuery(week, weekday) {
