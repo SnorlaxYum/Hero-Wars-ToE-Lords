@@ -34,7 +34,7 @@ client.on("message", msg => {
         })
     }
     function dailyComboQuery(week, weekday) {
-        if(weekday >= 5) {
+        if(weekday > 5) {
             replyQueryMessages('ToE already ended...... (Note both messages will be deleted in 1 min)')
         } else {
             let sql = `SELECT lord, combo FROM combo WHERE week='${week}' AND day=${weekday};`
