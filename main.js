@@ -89,7 +89,7 @@ client.on("message", msg => {
                 }
                 // get the last insert id
                 console.log(`A row has been inserted with rowid ${this.lastID}`)
-                replyQueryMessages(`Successfully added the video for ${videoArray[3]} from ${videoArray[2]}`)
+                replyQueryMessages(`Successfully added the video for ${videoArray[3]} from ${videoArray[0]}`)
             })
         }
     } else if (msg.content === "!lord-time") {
