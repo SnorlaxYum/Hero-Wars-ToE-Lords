@@ -36,7 +36,7 @@ function dailyComboQuery(week, weekday) {
                     let combos = [`**Week ${week}, Day ${weekday}:**`], videos = []
                     rows.forEach(row => {
                         combos.push(`${row.lord} Lord: ${row.combo}`)
-                        db.all(`SELECT lord, combo, player, attackingCombo, point, uri FROM video WHERE combo=${row.combo};`, [], (err2, rows2) => {
+                        db.all(`SELECT lord, combo, player, attackingCombo, point, uri FROM video WHERE combo='${row.combo}';`, [], (err2, rows2) => {
                             if (err2) {
                                 reject(`Error: ${err2}`)
                             }
