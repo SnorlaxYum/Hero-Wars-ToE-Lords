@@ -25,7 +25,7 @@ client.on("ready", () => {
 function dailyComboQuery(week, weekday) {
     return new Promise((resolve, reject) => {
         if(weekday > 5) {
-            resolve('ToE already ended...... (Note both messages will be deleted in 1 min)')
+            resolve('ToE already ended......')
         } else {
             let sql = `SELECT lord, combo FROM combo WHERE week='${week}' AND day=${weekday};`
             db.all(sql, [], (err, rows) => {
@@ -33,10 +33,22 @@ function dailyComboQuery(week, weekday) {
                     reject(`Error: ${err}`)
                 }
                 if(rows.length) {
-                    let combos = [`**Week ${week}, Day ${weekday}:**`, ...rows.map(row => `${row.lord} Lord: ${row.combo}`), '(Note both messages will be deleted in 1 min)']
+                    let combos = [`**Week ${week}, Day ${weekday}:**`], videos = []
+                    rows.forEach(row => {
+                        combos.push(`${row.lord} Lord: ${row.combo}`)
+                        db.all(`SELECT lord, combo, player, attackingCombo, point, uri FROM video WHERE combo=${row.combo};`, [], (err2, rows2) => {
+                            if (err2) {
+                                reject(`Error: ${err2}`)
+                            }
+                            rows2.forEach(video => {
+                                videos.push(`**${video.lord} Lord (${video.combo})** video from ${video.player} (Attacking Team: **${video.attackingCombo}, ${video.point} points**): ${video.uri}`)
+                            })
+                        })
+                    })
+                    combos.push('', 'Maxed versions:', ...videos)
                     resolve(combos.join('\n'))
                 } else {
-                    resolve('Not found, there are only 3 weeks (A, B, C) in a cycle and 5 days (1-5) in a week.\n(Note both messages will be deleted in 1 min)')
+                    resolve('Not found, there are only 3 weeks (A, B, C) in a cycle and 5 days (1-5) in a week.')
                 }
             })
         }
