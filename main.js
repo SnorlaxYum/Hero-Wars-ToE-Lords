@@ -27,7 +27,7 @@ try{
         console.dir(res)
         setInterval(() => {
             const {week, weekday} = weekJudge()
-            let channel = member.guild.channels.cache.find(ch => ch.name === 'member-log')
+            let channel = client.channels.cache.find(ch => ch.name === 'member-log')
             if(!channel) return
             channel.send(`Week ${week<1 ? 'A' : week < 2 ? 'B': 'C'} Day ${parseInt(weekday)+1}`)
         }, 1000)
