@@ -26,10 +26,11 @@ try{
         console.log("Request success")
         console.dir(res)
         setInterval(() => {
-            var guild = client.guilds.fetch(`s`)
-            if(guild && guild.channels.get('744191975913422979')){
-                guild.channels.get('744191975913422979').send("Good Morning");
-            }
+            const {week, weekday} = weekJudge()
+            let message = new Discord.Message(client, `Week ${week<1 ? 'A' : week < 2 ? 'B': 'C'} Day ${parseInt(weekday)+1}`, client.channels.cache.get('835855745621819423'));
+            message.crosspost()
+                .then(() => console.log('Crossposted message'))
+                .catch(console.error);
         }, 1000)
     }, rej => {
         console.log("Request rejection")
