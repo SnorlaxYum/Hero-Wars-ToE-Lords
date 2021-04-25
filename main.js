@@ -57,7 +57,7 @@ client.on("message", msg => {
     if (msg.content === "!ping") {
         msg.reply("pong");
     } else if (msg.content.startsWith("!lord-video-add")) {
-        const videoArray = msg.content.split("|||").slice(1)
+        const videoArray = msg.content.split("[+++]").slice(1)
         if(videoArray.length < 6) {
             replyQueryMessages('need 6 parameters (lord text, combo text, player text, attackingCombo text, point integer, uri)')
         } else {
