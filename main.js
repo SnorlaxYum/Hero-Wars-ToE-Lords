@@ -3,6 +3,7 @@ const client = new Discord.Client()
 const sqlite3 = require('sqlite3').verbose()
 let db
 
+// judge the position of the day in a ToE cycle
 function weekJudge() {
     let pos = (new Date() - new Date('2021-04-12T13:00:00+0800'))
     let week = pos / (7* 24 * 60 * 60 * 1000) % 3
@@ -11,6 +12,7 @@ function weekJudge() {
     return {week, weekday, time}
 }
 
+// ready
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`)
   db = new sqlite3.Database('./main.db', (err) => {
@@ -22,6 +24,11 @@ client.on("ready", () => {
   db.run('CREATE TABLE IF NOT EXISTS video(lord text, combo text, player text, attackingCombo text, point integer, uri text)')
 })
 
+/**
+ * Query the daily lord combos
+ * @param {String} week week
+ * @param {Number} weekday day in a week, starting from 1
+ */
 function dailyComboQuery(week, weekday) {
     return new Promise((resolve, reject) => {
         if(weekday > 5) {
@@ -63,6 +70,7 @@ function dailyComboQuery(week, weekday) {
     })
 }
 
+// query
 client.on("message", msg => {
     function replyQueryMessages(content, timeout=60*1000) {
         msg.reply(content).then(reply => {
@@ -118,6 +126,7 @@ client.on("message", msg => {
     }
 })
 
+// about sending things at ToE start
 try{
     client.login(process.env.TOKEN).then(res => {
         console.log("Request success")
