@@ -33,27 +33,28 @@ function dailyComboQuery(week, weekday) {
                     reject(`Error: ${err}`)
                 }
                 if(rows.length) {
-                    let combos = [`**Week ${week}, Day ${weekday}:**`], videos = []
+                    let combos = [`**Week ${week}, Day ${weekday}:**`], promises = []
                     rows.forEach(row => {
                         combos.push(`${row.lord} Lord: ${row.combo}`)
-                        new Promise((res, rej) => {
+                        promises.push(new Promise(res => {
                             db.all(`SELECT lord, combo, player, attackingCombo, point, uri FROM video WHERE combo='${row.combo}';`, [], (err2, rows2) => {
                                 if (err2) {
-                                    rej(`Error: ${err2}`)
+                                    res(`Error: ${err2}`)
                                 }
                                 res(rows2)
                             })
-                        }).then(result => {
-                            if(result.length){
-                                if(videos.length === 0) {videos.push('', 'Maxed versions:')}
-                                result.forEach(video => {
-                                    videos.push(`**${video.lord} Lord (${video.combo})** video from ${video.player} (Attacking Team: **${video.attackingCombo}, ${video.point} points**): ${video.uri}`)
-                                })
-                            }
-                        }, e => reject(e))
+                        }))
                     })
-                    combos.push('', ...videos)
-                    resolve(combos.join('\n'))
+                    Promise.all(promises).then(videos => {
+                        videos = videos.filter(video => typeof video === "object").reduce((a, b) => a.concat(b))
+                        if(videos.length > 0) {
+                            combos.push('', 'Maxed versions:')
+                            videos.forEach(video => {
+                                combos.push(`**${video.lord} Lord (${video.combo})** video from ${video.player} (Attacking Team: **${video.attackingCombo}, ${video.point} points**): ${video.uri}`)
+                            })
+                        }
+                        resolve(combos.join('\n'))
+                    })
                 } else {
                     resolve('Not found, there are only 3 weeks (A, B, C) in a cycle and 5 days (1-5) in a week.')
                 }
