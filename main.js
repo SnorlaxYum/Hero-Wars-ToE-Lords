@@ -25,6 +25,12 @@ try{
     client.login(process.env.TOKEN).then(res => {
         console.log("Request success")
         console.dir(res)
+        setInterval(() => {
+            var guild = client.guilds.get(`snorlax's server`);
+            if(guild && guild.channels.get('toe-daily')){
+                guild.channels.get('toe-daily').send("Good Morning");
+            }
+        }, 1000)
     }, rej => {
         console.log("Request rejection")
         console.error(rej)
