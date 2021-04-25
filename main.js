@@ -11,17 +11,15 @@ function weekJudge() {
     return {week, weekday, time}
 }
 
-function replyQueryMessages(msg, content, timeout) {
-    if(msg.reply){
-        msg.reply(content).then(reply => {
-            reply.delete({timeout})
-                .then(msg1 => console.log(`Deleted message from ${msg1.author.username}.`))
-                .catch(console.error)
-            msg.delete({timeout})
-                .then(msg1 => console.log(`Deleted message from ${msg1.author.username}.`))
-                .catch(console.error)
-        })
-    }
+function replyQueryMessages(replyFunc, delFunc, content, timeout) {
+    replyFunc(content).then(reply => {
+        reply.delete({timeout})
+            .then(msg1 => console.log(`Deleted message from ${msg1.author.username}.`))
+            .catch(console.error)
+        delFunc({timeout})
+            .then(msg1 => console.log(`Deleted message from ${msg1.author.username}.`))
+            .catch(console.error)
+    })
 }
 
 client.on("ready", () => {
@@ -46,14 +44,15 @@ client.on("message", msg => {
         if(comboArray.length === 0) {
             const {week, weekday} = weekJudge()
             if(weekday >=5) {
-                msg.reply('ToE already ended...... (Note both messages will be deleted in 1 min)').then(reply => {
-                    reply.delete({timeout})
-                        .then(msg1 => console.log(`Deleted message from ${msg1.author.username}.`))
-                        .catch(console.error)
-                    msg.delete({timeout})
-                        .then(msg1 => console.log(`Deleted message from ${msg1.author.username}.`))
-                        .catch(console.error)
-                })
+                // msg.reply('ToE already ended...... (Note both messages will be deleted in 1 min)').then(reply => {
+                //     reply.delete({timeout})
+                //         .then(msg1 => console.log(`Deleted message from ${msg1.author.username}.`))
+                //         .catch(console.error)
+                //     msg.delete({timeout})
+                //         .then(msg1 => console.log(`Deleted message from ${msg1.author.username}.`))
+                //         .catch(console.error)
+                // })
+                replyQueryMessages(msg.reply, msg.delete, 'ToE already ended...... (Note both messages will be deleted in 1 min)', 60*1000)
             } else {
                 let sql = `SELECT lord, combo FROM combo WHERE week=${week}, day=${weekday};`
                 db.all(sql, [], (err, rows) => {
