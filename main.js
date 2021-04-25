@@ -42,8 +42,12 @@ client.on("message", msg => {
                 if (err) {
                   throw err;
                 }
-                let combos = [`**Week ${week}, Day ${weekday}:**`, ...rows.map(row => `${row.lord} Lord: ${row.combo}`), '(Note both messages will be deleted in 1 min)']
-                replyQueryMessages(combos.join('\n'))
+                if(rows.length) {
+                    let combos = [`**Week ${week}, Day ${weekday}:**`, ...rows.map(row => `${row.lord} Lord: ${row.combo}`), '(Note both messages will be deleted in 1 min)']
+                    replyQueryMessages(combos.join('\n'))
+                } else {
+                    replyQueryMessages('Not found, there are only 3 weeks (A, B, C) in a cycle and 5 days (1-5) in a week.\n(Note both messages will be deleted in 1 min)')
+                }
             })
         }
     }
