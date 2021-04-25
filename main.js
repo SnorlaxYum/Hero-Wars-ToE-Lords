@@ -61,18 +61,21 @@ client.on("message", msg => {
         const comboArray = msg.content.split(" ").slice(1)
         if(comboArray.length === 0) {
             const {week, weekday} = weekJudge()
-            dailyComboQuery(week, weekday)
+            let message
             try {
-                replyQueryMessages(dailyComboQuery(week, weekday))
-            } catch {
-                console.error
+                message = dailyComboQuery(week, weekday)
+                replyQueryMessages(message)
+            } catch(e) {
+                console.error(e)
             }
         } else if(comboArray.length === 2) {
             const [week, weekday] = comboArray
+            let message
             try {
-                replyQueryMessages(dailyComboQuery(week, weekday))
-            } catch {
-                console.error
+                message = dailyComboQuery(week, weekday)
+                replyQueryMessages(message)
+            } catch(e) {
+                console.error(e)
             }
         } else {
             replyQueryMessages("Daily combo support only 0 or 2 parameters.")
@@ -88,10 +91,12 @@ try{
             let channel = client.channels.cache.find(ch => ch.name === 'toe-daily')
             if(!channel) return
             if(channel && time === 0) {
+                let message
                 try {
-                    channel.send(dailyComboQuery(week, weekday))
-                } catch {
-                    console.error
+                    message = dailyComboQuery(week, weekday)
+                    channel.send(message)
+                } catch(e) {
+                    console.error(e)
                 }
             }
         }, 1000)
