@@ -29,7 +29,7 @@ function dailyComboQuery(week, weekday) {
         let sql = `SELECT lord, combo FROM combo WHERE week='${week}' AND day=${weekday};`
         db.all(sql, [], (err, rows) => {
             if (err) {
-                return err
+                return `Error: ${err}`
             }
             if(rows.length) {
                 let combos = [`**Week ${week}, Day ${weekday}:**`, ...rows.map(row => `${row.lord} Lord: ${row.combo}`), '(Note both messages will be deleted in 1 min)']
