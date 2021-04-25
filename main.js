@@ -46,7 +46,14 @@ client.on("message", msg => {
         if(comboArray.length === 0) {
             const {week, weekday} = weekJudge()
             if(weekday >=5) {
-                replyQueryMessages('ToE already ended...... (Note both messages will be deleted in 1 min)')
+                msg.reply('ToE already ended...... (Note both messages will be deleted in 1 min)').then(reply => {
+                    reply.delete({timeout})
+                        .then(msg1 => console.log(`Deleted message from ${msg1.author.username}.`))
+                        .catch(console.error)
+                    msg.delete({timeout})
+                        .then(msg1 => console.log(`Deleted message from ${msg1.author.username}.`))
+                        .catch(console.error)
+                })
             } else {
                 let sql = `SELECT lord, combo FROM combo WHERE week=${week}, day=${weekday};`
                 db.all(sql, [], (err, rows) => {
