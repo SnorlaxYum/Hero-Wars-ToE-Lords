@@ -36,17 +36,21 @@ function dailyComboQuery(week, weekday) {
                     let combos = [`**Week ${week}, Day ${weekday}:**`], videos = []
                     rows.forEach(row => {
                         combos.push(`${row.lord} Lord: ${row.combo}`)
-                        db.all(`SELECT lord, combo, player, attackingCombo, point, uri FROM video WHERE combo='${row.combo}';`, [], (err2, rows2) => {
-                            if (err2) {
-                                reject(`Error: ${err2}`)
-                            }
-                            if(rows2.length){
-                                rows2.push('Maxed versions:')
-                                rows2.forEach(video => {
+                        new Promise((res, rej) => {
+                            db.all(`SELECT lord, combo, player, attackingCombo, point, uri FROM video WHERE combo='${row.combo}';`, [], (err2, rows2) => {
+                                if (err2) {
+                                    rej(`Error: ${err2}`)
+                                }
+                                res(rows2)
+                            })
+                        }).then(result => {
+                            if(result.length){
+                                if(videos.length === 0) {videos.push('', 'Maxed versions:')}
+                                result.forEach(video => {
                                     videos.push(`**${video.lord} Lord (${video.combo})** video from ${video.player} (Attacking Team: **${video.attackingCombo}, ${video.point} points**): ${video.uri}`)
                                 })
                             }
-                        })
+                        }, e => reject(e))
                     })
                     combos.push('', ...videos)
                     resolve(combos.join('\n'))
