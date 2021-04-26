@@ -44,7 +44,7 @@ function dailyComboQuery(week, weekday) {
                 }
                 if (rows.length) {
                     let combos = [`**Week ${week}, Day ${weekday}:**`]
-                    combo.push(...rows.map(row => `${row.lord} Lord: ${row.combo}`))
+                    combos.push(...rows.map(row => `${row.lord} Lord: ${row.combo}`))
                     new Promise(res => {
                         db.all(`SELECT lord, combo, player, attackingCombo, point, uri FROM video WHERE ${[...rows.map(() => "combo=?"), "lord=?"].join(" OR ")};`, [...rows.map(row => row.combo), "All"], (err2, rows2) => {
                             if (err2) {
