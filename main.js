@@ -198,9 +198,9 @@ client.on("message", msg => {
         if (comboArray.length === 0 || comboArray.length === 2) {
             let week, weekday
             if (comboArray.length === 0) {
-                let { week1, weekday1 } = weekJudge()
-                week = week1
-                weekday = weekday1
+                let date = weekJudge()
+                week = date.week
+                weekday = date.weekday
             } else {
                 let [week1, weekday1] = comboArray
                 week = week1
