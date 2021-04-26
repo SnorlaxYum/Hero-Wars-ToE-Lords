@@ -8,7 +8,7 @@ let ready = false
 client.on("ready", () => {
     recordLog(`Logged in as ${client.user.tag}!`)
     const {week, weekday} = weekJudge()
-    let channels = [...client.channels.cache.values()].filter(ch => ch.name === 'bot-commands')
+    let channels = [...client.channels.cache.values()].filter(ch => ch.name === 'toe-daily')
     if(!channels) return
     if(!ready && channels) {
         ready = true
