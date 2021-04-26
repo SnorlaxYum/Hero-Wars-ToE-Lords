@@ -5,7 +5,8 @@ const sqlite3 = require('sqlite3').verbose()
 let db
 
 function recordActivity(message, severity='log') {
-    console[severity](`${new Date} - ${message}`)
+    // console[severity](`${new Date} - ${message}`)
+    console[severity](message)
 }
 
 // judge the position of the day in a ToE cycle
