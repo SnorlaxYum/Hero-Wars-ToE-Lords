@@ -158,7 +158,11 @@ client.on("message", msg => {
                 db.run(`INSERT INTO video(lord, combo, player, attackingCombo, point, uri) VALUES(?, ?, ?, ?, ?, ?)`, videoArray, function (err) {
                     if (err) {
                         recordLog(err.message, 'error')
-                        replyQueryMessagesWrapper("An internal error happened.")
+                        if(err.message.indexOf("UNIQUE constraint failed") !== -1) {
+                            replyQueryMessagesWrapper("The video is already in the database.")
+                        } else {
+                            replyQueryMessagesWrapper("An internal error happened.")
+                        }
                     } else {
                         // get the last insert id
                         recordLog(`A row has been inserted into video with uri ${videoArray[5]}`)
@@ -168,14 +172,14 @@ client.on("message", msg => {
                 })
             }
         } else {
-            replyQueryMessagesWrapper("Sorry, u have no permissions to complete this action.")
+            replyQueryMessagesWrapper("Sorry, you have no permissions to complete this action.")
         }
 
     } else if (msg.content.startsWith("!lord-video-delete")) {
         if (adminPermission()) {
             const videoArray = msg.content.split(" ").slice(1)
             if (videoArray.length === 0) {
-                replyQueryMessagesWrapper('need at least one uri to complete')
+                replyQueryMessagesWrapper('This API needs at least one uri to complete')
             } else {
                 db.run(`DELETE FROM video WHERE ${videoArray.map(() => "uri=?").join(" OR ")};`, videoArray, function (err) {
                     if (err) {
@@ -186,7 +190,7 @@ client.on("message", msg => {
                 })
             }
         } else {
-            replyQueryMessagesWrapper("Sorry, u have no permissions to complete this action.")
+            replyQueryMessagesWrapper("Sorry, you have no permissions to complete this action.")
         }
     } else if (msg.content === "!lord-time") {
         const { week, weekday, time } = weekJudge(), padNum = num => String(num).padStart(2, "0")
