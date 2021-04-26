@@ -37,8 +37,7 @@ function dailyComboQuery(week, weekday) {
         if (weekday > 5) {
             resolve('ToE already ended......')
         } else {
-            let sql = `SELECT lord, combo FROM combo WHERE week=? AND day=?;`
-            db.all(sql, [week, weekday], (err, rows) => {
+            db.all(`SELECT lord, combo FROM combo WHERE week=? AND day=?;`, [week, weekday], (err, rows) => {
                 if (err) {
                     reject(`Error: ${err}`)
                 }
@@ -46,7 +45,7 @@ function dailyComboQuery(week, weekday) {
                     let combos = [`**Week ${week}, Day ${weekday}:**`]
                     combos.push(...rows.map(row => `${row.lord} Lord: ${row.combo}`))
                     new Promise(res => {
-                        db.all(`SELECT lord, combo, player, attackingCombo, point, uri FROM video WHERE ${[...rows.map(() => "combo=?"), "lord=?"].join(" OR ")};`, [...rows.map(row => row.combo), "All"], (err2, rows2) => {
+                        db.all(`SELECT lord, combo, player, attackingCombo, point, uri FROM video WHERE ${[...rows.map(() => "combo=?"), "lord=?"].join(" OR ")} ORDER BY lord DESC;`, [...rows.map(row => row.combo), "All"], (err2, rows2) => {
                             if (err2) {
                                 res(`Error: ${err2}`)
                             }
