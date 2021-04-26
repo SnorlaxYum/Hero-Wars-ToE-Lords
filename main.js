@@ -85,12 +85,34 @@ client.on("message", msg => {
             }
         })
     }
-    function replyQueryMessagesWrapper(content, timeout=60*1000) {
+    function sendMessages(content, timeout) {
+        msg.channel.send(content).then(msg => {
+            if(timeout > 0) {
+                msg.delete({timeout})
+                    .then(msg1 => console.log(`Deleted message from ${msg1.author.username}.`))
+                    .catch(console.error)
+            }
+        })
+    }
+    function judgeTimeout(timeout) {
         if(msg.channel.name.startsWith('bot-command')) {
-            replyQueryMessages(content, -1)
-        } else {
-            replyQueryMessages(`${content}\n\n(Note both messages will be deleted in ${timeout}ms)`, timeout)
+            return -1
         }
+        return timeout
+    }
+    function replyQueryMessagesWrapper(content, timeout=60*1000) {
+        timeout = judgeTimeout(timeout)
+        if(timeout >= 0) {
+            content += "\n\n(Note both messages will be deleted in ${timeout}ms)"
+        }
+        replyQueryMessages(content, timeout)
+    }
+    function sendMessagesWrapper(content, timeout=60*1000) {
+        timeout = judgeTimeout(timeout)
+        if(timeout >= 0) {
+            content += "\n\n(Note both messages will be deleted in ${timeout}ms)"
+        }
+        sendMessages(content, timeout)
     }
     if (msg.content === "!ping") {
         msg.reply("pong");
@@ -130,6 +152,19 @@ client.on("message", msg => {
             })
         } else {
             replyQueryMessagesWrapper("Daily combo support only 0 or 2 parameters.")
+        }
+    } else if(msg.content.startsWith("!help")) {
+        let params = msg.content.split(' ').slice(1), things = [
+            {command: `!lord-time`, description: `Current time in Lord Format`},
+            {command: `!lord-daily-combo`, description: `Lord Combos now.`},
+            {command: `!lord-daily-combo <Week> <WeekDay>`, description: `Lord Combos now`},
+            {command: `!lord-video-add <lord> <combo> <player> <attackingCombo> <point> <uri>`, description: `Add Lord Videos.`},
+        ]
+        if(params.length === 0) {
+            let newMsg = new Discord.MessageEmbed().setTitle("Commands Help").setDescription(
+                `${things.map((thing, index) => `${index+1}. \`${thing.command}\`\n${thing.description}`).join('\n-----------------------------------------------------------------------------------------------\n')}`
+            )
+            sendMessagesWrapper(newMsg)
         }
     }
 })
