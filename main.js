@@ -1,5 +1,6 @@
 const Discord = require("discord.js")
 const client = new Discord.Client()
+const adminRoles = require("./adminRoles.json")
 const sqlite3 = require('sqlite3').verbose()
 let db
 
@@ -123,23 +124,33 @@ client.on("message", msg => {
         }
         sendMessages(content, timeout)
     }
+    function adminPermission() {
+        const rolesList = Array.from(msg.member.roles.cache.values()).map(i => i.name), guildId = msg.member.guild.id
+        return rolesList.filter(role => role.guildId === guildId).filter(role => role.name).length > 0
+    }
     if (msg.content === "!ping") {
         msg.reply("pong");
     } else if (msg.content.startsWith("!lord-video-add")) {
-        const videoArray = msg.content.split("[+++]").slice(1)
-        videoArray[4] = parseInt(videoArray[4])
-        if(videoArray.length < 6) {
-            replyQueryMessagesWrapper('need 6 parameters (lord text, combo text, player text, attackingCombo text, point integer, uri)')
+        if(adminPermission()) {
+            const videoArray = msg.content.split("[+++]").slice(1)
+            videoArray[4] = parseInt(videoArray[4])
+            console.log(Array.from(msg.member.roles.cache.values()).map(i => i.name), msg.member.guild.id)
+            if(videoArray.length < 6) {
+                replyQueryMessagesWrapper('need 6 parameters (lord text, combo text, player text, attackingCombo text, point integer, uri)')
+            } else {
+                db.run(`INSERT INTO video(lord, combo, player, attackingCombo, point, uri) VALUES(?, ?, ?, ?, ?, ?)`, videoArray, function(err) {
+                    if (err) {
+                    return console.log(err.message);
+                    }
+                    // get the last insert id
+                    console.log(`A row has been inserted with rowid ${this.lastID}`)
+                    replyQueryMessagesWrapper(`Successfully added the video for ${videoArray[1]} from ${videoArray[2]}`)
+                })
+            }
         } else {
-            db.run(`INSERT INTO video(lord, combo, player, attackingCombo, point, uri) VALUES(?, ?, ?, ?, ?, ?)`, videoArray, function(err) {
-                if (err) {
-                return console.log(err.message);
-                }
-                // get the last insert id
-                console.log(`A row has been inserted with rowid ${this.lastID}`)
-                replyQueryMessagesWrapper(`Successfully added the video for ${videoArray[1]} from ${videoArray[2]}`)
-            })
+            replyQueryMessagesWrapper("Sorry, u have no permissions to complete this action.")
         }
+        
     } else if (msg.content === "!lord-time") {
         const {week, weekday, time} = weekJudge(), padNum = num => String(num).padStart(2, "0")
         let timeTotalSec = parseInt(time/1000), second = timeTotalSec % 60, min = parseInt(timeTotalSec / 60) % 60, hour = parseInt(timeTotalSec / 60 / 60)
