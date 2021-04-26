@@ -1,14 +1,15 @@
 const {client} = require("./discordLogin")
-const {weekJudge, dailyComboQuery, recordActivity} = require("./main")
+const {recordLog} = require("./log")
+const {weekJudge, dailyComboQuery} = require("./main")
 
 // ready
 client.on("ready", () => {
-    recordActivity(`Logged in as ${client.user.tag}!`)
+    recordLog(`Logged in as ${client.user.tag}!`)
 })
 
 try{
     client.login(process.env.TOKEN).then(res => {
-        recordActivity("Login Request success")
+        recordLog("Login Request success")
         const {week, weekday, time} = weekJudge()
         let channels = [...client.channels.cache.values()].filter(ch => ch.name === 'toe-daily')
         if(!channels) return
@@ -30,10 +31,10 @@ try{
             })
         }
     }, rej => {
-        recordActivity("Request rejection")
-        recordActivity(rej, 'error')
+        recordLog("Request rejection")
+        recordLog(rej, 'error')
     })
 } catch(e) {
-    recordActivity("Request error")
-    recordActivity(e, 'error')
+    recordLog("Request error")
+    recordLog(e, 'error')
 }

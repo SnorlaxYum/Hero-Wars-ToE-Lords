@@ -1,12 +1,8 @@
 const adminRoles = require("./adminRoles.json")
 const {Discord, client} = require("./discordLogin")
+const {recordLog} = require("./log")
 const sqlite3 = require('sqlite3').verbose()
 let db
-
-function recordActivity(message, severity='log') {
-    // console[severity](`${new Date} - ${message}`)
-    console[severity](message)
-}
 
 // judge the position of the day in a ToE cycle
 function weekJudge() {
@@ -20,12 +16,12 @@ function weekJudge() {
 
 // ready
 client.on("ready", () => {
-    recordActivity(`Logged in as ${client.user.tag}!`)
+    recordLog(`Logged in as ${client.user.tag}!`)
   db = new sqlite3.Database(process.env.DBPATH, (err) => {
     if (err) {
-      recordActivity(err, 'error')
+      recordLog(err, 'error')
     }
-    recordActivity('Connected to the main database.')
+    recordLog('Connected to the main database.')
   })
   db.run('CREATE TABLE IF NOT EXISTS combo(week text, day integer, lord text, combo text UNIQUE);')
   db.run('CREATE TABLE IF NOT EXISTS video(lord text, combo text, player text, attackingCombo text, point integer, uri text UNIQUE);')
@@ -110,11 +106,11 @@ client.on("message", msg => {
         msg.reply(content).then(reply => {
             if(timeout > 0) {
                 reply.delete({timeout})
-                    .then(msg1 => recordActivity(`Deleted message from ${msg1.author.username}.`))
-                    .catch(e => recordActivity(e, 'error'))
+                    .then(msg1 => recordLog(`Deleted message from ${msg1.author.username}.`))
+                    .catch(e => recordLog(e, 'error'))
                 msg.delete({timeout})
-                    .then(msg1 => recordActivity(`Deleted message from ${msg1.author.username}.`))
-                    .catch(e => recordActivity(e, 'error'))
+                    .then(msg1 => recordLog(`Deleted message from ${msg1.author.username}.`))
+                    .catch(e => recordLog(e, 'error'))
             }
         })
     }
@@ -122,11 +118,11 @@ client.on("message", msg => {
         msg.channel.send(content).then(msg2 => {
             if(timeout > 0) {
                 msg2.delete({timeout})
-                    .then(msg1 => recordActivity(`Deleted message from ${msg1.author.username}.`))
-                    .catch(e => recordActivity(e, 'error'))
+                    .then(msg1 => recordLog(`Deleted message from ${msg1.author.username}.`))
+                    .catch(e => recordLog(e, 'error'))
                 msg.delete({timeout})
-                    .then(msg1 => recordActivity(`Deleted message from ${msg1.author.username}.`))
-                    .catch(e => recordActivity(e, 'error'))
+                    .then(msg1 => recordLog(`Deleted message from ${msg1.author.username}.`))
+                    .catch(e => recordLog(e, 'error'))
             }
         })
     }
@@ -172,11 +168,11 @@ client.on("message", msg => {
             } else {
                 db.run(`INSERT INTO video(lord, combo, player, attackingCombo, point, uri) VALUES(?, ?, ?, ?, ?, ?)`, videoArray, function(err) {
                     if (err) {
-                        recordActivity(err.message, 'error')
+                        recordLog(err.message, 'error')
                         replyQueryMessagesWrapper("An internal error happened.")
                     } else {
                         // get the last insert id
-                        recordActivity(`A row has been inserted into video with uri ${videoArray[5]}`)
+                        recordLog(`A row has been inserted into video with uri ${videoArray[5]}`)
                         replyQueryMessagesWrapper(`Successfully added the video for ${videoArray[1]} from ${videoArray[2]}`)
                     }
                     
@@ -196,7 +192,7 @@ client.on("message", msg => {
                     if (err) {
                         replyQueryMessagesWrapper(err.message)
                     }
-                    recordActivity(`Successfully deleted the videos whose uri are ${videoArray.join(' or ')}`)
+                    recordLog(`Successfully deleted the videos whose uri are ${videoArray.join(' or ')}`)
                     replyQueryMessagesWrapper(`Successfully deleted the videos whose uri are ${videoArray.join(' or ')}`)
                 })
             }
@@ -264,4 +260,4 @@ client.on("message", msg => {
     }
 })
 
-module.exports = {weekJudge, dailyComboQuery, recordActivity}
+module.exports = {weekJudge, dailyComboQuery, recordLog}
