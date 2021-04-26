@@ -16,18 +16,16 @@ client.on("ready", () => {
             dailyComboQuery(week, weekday)
                 .then(res => {
                     if(typeof res === "string") {
-                        channel.send(res)
-                        process.exit()
+                        channel.send(res).then(process.exit)
                     } else {
-                        channel.send(res[0]+'\n'+res[1][0].join('\n'))
+                        let pros = [channel.send(res[0]+'\n'+res[1][0].join('\n'))]
                         for(let i = 1; i < res[1].length; i++) {
-                            channel.send(res[1][i].join('\n'))
+                            pros.push(channel.send(res[1][i].join('\n')))
                         }
-                        process.exit()
+                        Promise.all(process.exit)
                     }
                 }, rej => {
-                    channel.send(rej)
-                    process.exit()
+                    channel.send(rej).then(process.exit)
                 })
                 .catch(e => recordLog(e, 'error'))
         })
