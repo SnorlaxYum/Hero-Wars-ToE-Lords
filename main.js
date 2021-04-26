@@ -54,12 +54,24 @@ function dailyComboQuery(week, weekday) {
                             })
                         }))
                     })
+                    promises.push(new Promise(res => {
+                        db.all(`SELECT lord, combo, player, attackingCombo, point, uri FROM video WHERE lord=?;`, ["All"], (err2, rows2) => {
+                            if (err2) {
+                                res(`Error: ${err2}`)
+                            }
+                            res(rows2.filter(row => row.combo.indexOf(rows[0].combo) !== -1))
+                        })
+                    }))
                     Promise.all(promises).then(videos => {
                         videos = videos.filter(video => typeof video === "object").reduce((a, b) => a.concat(b))
                         if(videos.length > 0) {
                             combos.push('', 'Maxed versions:')
                             videos.forEach(video => {
-                                combos.push(`**${video.lord} ${video.lord === "All" ? "Lords" : "Lord"} (${video.combo})** video from ${video.player} (Attacking Team: **${video.attackingCombo}, ${video.point} points**): ${video.uri}`)
+                                if(video.lord === "All") {
+                                    combos.push(`**${video.lord} Lords** video from ${video.player} (Attacking Team: **${video.attackingCombo}, ${video.point} points**): ${video.uri}`)
+                                } else {
+                                    combos.push(`**${video.lord} Lord (${video.combo})** video from ${video.player} (Attacking Team: **${video.attackingCombo}, ${video.point} points**): ${video.uri}`)
+                                }
                             })
                         }
                         resolve(combos.join('\n'))
