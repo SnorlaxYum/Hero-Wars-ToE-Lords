@@ -44,3 +44,13 @@ $ sudo vim /etc/systemd/system/hwtoe.service
 
 As for the inside content, check `systemd/toelords.service`
 `TOKEN` and `DBPATH` has to be specified to make this correctly work.
+
+```
+$ sudo systemctl daemon-reload && sudo systemctl start hwtoe && sudo systemctl status hwtoe
+```
+
+when it's working, enable it.
+
+```
+$ sudo systemctl enable hwtoe
+```
