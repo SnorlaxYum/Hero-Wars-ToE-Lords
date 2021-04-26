@@ -168,11 +168,14 @@ client.on("message", msg => {
             } else {
                 db.run(`INSERT INTO video(lord, combo, player, attackingCombo, point, uri) VALUES(?, ?, ?, ?, ?, ?)`, videoArray, function(err) {
                     if (err) {
-                    return console.log(err.message);
+                        console.log(err.message);
+                        replyQueryMessagesWrapper(err.message)
+                    } else {
+                        // get the last insert id
+                        console.log(`A row has been inserted with rowid ${this.lastID}`)
+                        replyQueryMessagesWrapper(`Successfully added the video for ${videoArray[1]} from ${videoArray[2]}`)
                     }
-                    // get the last insert id
-                    console.log(`A row has been inserted with rowid ${this.lastID}`)
-                    replyQueryMessagesWrapper(`Successfully added the video for ${videoArray[1]} from ${videoArray[2]}`)
+                    
                 })
             }
         } else {
