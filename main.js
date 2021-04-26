@@ -161,9 +161,12 @@ client.on("message", msg => {
             {command: `!lord-video-add <lord> <combo> <player> <attackingCombo> <point> <uri>`, description: `Add Lord Videos.`},
         ]
         if(params.length === 0) {
-            let newMsg = new Discord.MessageEmbed().setTitle("Commands Help").setDescription(
-                `${things.map((thing, index) => `${index+1}. \`${thing.command}\`\n${thing.description}`).join('\n-----------------------------------------------------------------------------------------------\n')}`
-            )
+            let newMsg = new Discord.MessageEmbed()
+                            .setTitle("Commands Help")
+                            .setDescription(
+                                `${things.map((thing, index) => `${index+1}. \`${thing.command}\`\n${thing.description}`).join('\n-----------------------------------------------------------------------------------------------\n')}`
+                            )
+                            .setColor(0xff0000)
             sendMessagesWrapper(newMsg)
         }
     }
