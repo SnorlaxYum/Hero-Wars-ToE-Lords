@@ -1,0 +1,12 @@
+[Unit]
+Description=Record and Load the data for ToE Lords
+
+[Service]
+User=hwtoe
+ExecStart=/the/path/to/node /var/lib/hwtoe/main.js
+Environment=TOKEN=thediscordbottoken
+Environment=DBPATH=/var/lib/hwtoe/main.db
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

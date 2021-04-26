@@ -27,3 +27,18 @@ Then edit it according to ur need
 ```
 
 `guildId` is ur guildId, `role` is the privileged role.
+
+## Add a user and make it a service
+
+```
+$ sudo useradd hwtoe -d /var/lib/hwtoe
+$ sudo mkdir /var/lib/hwtoe
+$ sudo mv * /var/lib/hwtoe
+$ sudo chown -R hwtoe:hwtoe /var/lib/hwtoe
+```
+
+```
+$ vim /etc/systemd/system/hwtoe.service
+```
+
+As for the inside content, check `systemd/toelords.service`

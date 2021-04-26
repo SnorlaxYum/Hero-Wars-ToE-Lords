@@ -21,7 +21,7 @@ function weekJudge() {
 // ready
 client.on("ready", () => {
     recordActivity(`Logged in as ${client.user.tag}!`)
-  db = new sqlite3.Database('./main.db', (err) => {
+  db = new sqlite3.Database(process.env.DBPATH, (err) => {
     if (err) {
       recordActivity(err, 'error')
     }
