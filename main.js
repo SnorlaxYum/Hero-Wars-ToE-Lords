@@ -176,7 +176,7 @@ client.on("message", msg => {
                         replyQueryMessagesWrapper("An internal error happened.")
                     } else {
                         // get the last insert id
-                        recordActivity(`A row has been inserted into video with uri ${this.uri}`)
+                        recordActivity(`A row has been inserted into video with uri ${videoArray[5]}`)
                         replyQueryMessagesWrapper(`Successfully added the video for ${videoArray[1]} from ${videoArray[2]}`)
                     }
                     
