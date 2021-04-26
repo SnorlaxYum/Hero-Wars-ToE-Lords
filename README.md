@@ -72,5 +72,5 @@ As for the inside content, check `systemd/toedaily.timer`
 OnCalendar value depends on the host's timezone.
 
 ```
-$ sudo systemctl start hwtoedaily.timer && sudo systemctl enable hwtoedaily.timer
+$ sudo systemctl daemon-reload && sudo systemctl start hwtoedaily.timer && sudo systemctl enable hwtoedaily.timer
 ```
