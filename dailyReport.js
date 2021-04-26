@@ -13,18 +13,21 @@ client.on("ready", () => {
     if(!ready && channels) {
         ready = true
         channels.forEach(channel => {
-            dailyComboQuery(week, weekday).then(res => {
-                if(typeof res === "string") {
-                    channel.send(res)
-                } else {
-                    channel.send(res[0]+'\n'+res[1][0].join('\n'))
-                    for(let i = 1; i < res[1].length; i++) {
-                        channel.send(res[1][i].join('\n'))
+            dailyComboQuery(week, weekday)
+                .then(res => {
+                    if(typeof res === "string") {
+                        channel.send(res)
+                    } else {
+                        channel.send(res[0]+'\n'+res[1][0].join('\n'))
+                        for(let i = 1; i < res[1].length; i++) {
+                            channel.send(res[1][i].join('\n'))
+                        }
                     }
-                }
-            }, rej => {
-                channel.send(rej)
-            })
+                }, rej => {
+                    channel.send(rej)
+                })
+                .catch(e => recordLog(e, 'error'))
+                .finally(process.exit)
         })
     }
 })
