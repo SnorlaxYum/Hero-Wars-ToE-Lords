@@ -66,15 +66,32 @@ function dailyComboQuery(week, weekday) {
                         videos = videos.filter(video => typeof video === "object").reduce((a, b) => a.concat(b))
                         if(videos.length > 0) {
                             combos.push('', 'Maxed versions:')
-                            videos.forEach(video => {
-                                if(video.lord === "All") {
-                                    combos.push(`**${video.lord} Lords** video from ${video.player} (Attacking Team: **${video.attackingCombo}**): ${video.uri}`)
-                                } else {
-                                    combos.push(`**${video.lord} Lord (${video.combo})** video from ${video.player} (Attacking Team: **${video.attackingCombo}, ${video.point} points**): ${video.uri}`)
+                            if(videos.length <= 5) {
+                                videos.forEach(video => {
+                                    if(video.lord === "All") {
+                                        combos.push(`**${video.lord} Lords** video from ${video.player} (Attacking Team: **${video.attackingCombo}**): ${video.uri}`)
+                                    } else {
+                                        combos.push(`**${video.lord} Lord (${video.combo})** video from ${video.player} (Attacking Team: **${video.attackingCombo}, ${video.point} points**): ${video.uri}`)
+                                    }
+                                })
+                                resolve(combos.join('\n'))
+                            } else {
+                                let videoGroups = []
+                                // 5 is the maximum embed number allowed in a single message
+                                for(let i = 0; i < videos.length; i += 5) {
+                                    videoGroups.push(videos.slice(i, i+5)
+                                                        .map(video => video.lord === "All" ?
+                                                            `**${video.lord} Lords** video from ${video.player} (Attacking Team: **${video.attackingCombo}**): ${video.uri}`
+                                                                :
+                                                            `**${video.lord} Lord (${video.combo})** video from ${video.player} (Attacking Team: **${video.attackingCombo}, ${video.point} points**): ${video.uri}`
+                                                            )
+                                                    )
                                 }
-                            })
+                                resolve([combos.join('\n'), videoGroups])
+                            }
+                            
                         }
-                        resolve(combos.join('\n'))
+                        
                     })
                 } else {
                     resolve('Not found, there are only 3 weeks (A, B, C) in a cycle and 5 days (1-5) in a week.')
@@ -184,17 +201,27 @@ client.on("message", msg => {
         replyQueryMessagesWrapper(`Week ${week} - Day ${weekday} - ${padNum(hour)}:${padNum(min)}:${padNum(second)}`)
     } else if (msg.content.startsWith("!lord-daily-combo")) {
         const comboArray = msg.content.split(" ").slice(1)
-        if(comboArray.length === 0) {
-            const {week, weekday} = weekJudge()
+        if(comboArray.length === 0 || comboArray.length === 2) {
+            let week, weekday
+            if(comboArray.length === 0) {
+                let {week1, weekday1} = weekJudge()
+                week = week1
+                weekday = weekday1
+            } else {
+                let [week1, weekday1] = comboArray
+                week = week1
+                weekday = weekday1
+            }
+            
             dailyComboQuery(week, weekday).then(res => {
-                replyQueryMessagesWrapper(res)
-            }, rej => {
-                replyQueryMessagesWrapper(rej)
-            })
-        } else if(comboArray.length === 2) {
-            const [week, weekday] = comboArray
-            dailyComboQuery(week, weekday).then(res => {
-                replyQueryMessagesWrapper(res)
+                if(typeof res === "string") {
+                    replyQueryMessagesWrapper(res)
+                } else {
+                    replyQueryMessagesWrapper(res[0]+'\n'+res[1][0].join('\n'))
+                    for(let i = 1; i < res[1].length; i++) {
+                        msg.channel.send(res[1][i].join('\n'))
+                    }
+                }
             }, rej => {
                 replyQueryMessagesWrapper(rej)
             })
@@ -240,7 +267,14 @@ try{
             if(channels && time === 0) {
                 channels.forEach(channel => {
                     dailyComboQuery(week, weekday).then(res => {
-                        channel.send(res)
+                        if(typeof res === "string") {
+                            channel.send(res)
+                        } else {
+                            channel.send(res[0]+'\n'+res[1][0].join('\n'))
+                            for(let i = 1; i < res[1].length; i++) {
+                                channel.send(res[1][i].join('\n'))
+                            }
+                        }
                     }, rej => {
                         channel.send(rej)
                     })
