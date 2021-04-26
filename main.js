@@ -86,8 +86,11 @@ client.on("message", msg => {
         })
     }
     function sendMessages(content, timeout) {
-        msg.channel.send(content).then(msg => {
+        msg.channel.send(content).then(msg2 => {
             if(timeout > 0) {
+                msg2.delete({timeout})
+                    .then(msg1 => console.log(`Deleted message from ${msg1.author.username}.`))
+                    .catch(console.error)
                 msg.delete({timeout})
                     .then(msg1 => console.log(`Deleted message from ${msg1.author.username}.`))
                     .catch(console.error)
