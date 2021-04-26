@@ -126,7 +126,7 @@ client.on("message", msg => {
     }
     function adminPermission() {
         const rolesList = Array.from(msg.member.roles.cache.values()).map(i => i.name), guildId = msg.member.guild.id
-        return rolesList.filter(role => role.guildId === guildId).filter(role => role.name).length > 0
+        return adminRoles.filter(admin => rolesList.indexOf(admin.name) !== -1).filter(admin => admin.guildId === guildId).length > 0
     }
     if (msg.content === "!ping") {
         msg.reply("pong");
@@ -134,7 +134,6 @@ client.on("message", msg => {
         if(adminPermission()) {
             const videoArray = msg.content.split("[+++]").slice(1)
             videoArray[4] = parseInt(videoArray[4])
-            console.log(Array.from(msg.member.roles.cache.values()).map(i => i.name), msg.member.guild.id)
             if(videoArray.length < 6) {
                 replyQueryMessagesWrapper('need 6 parameters (lord text, combo text, player text, attackingCombo text, point integer, uri)')
             } else {
