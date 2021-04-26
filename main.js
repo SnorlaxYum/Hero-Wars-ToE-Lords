@@ -298,3 +298,5 @@ try{
     recordActivity("Request error")
     recordActivity(e, 'error')
 }
+
+exports = {weekJudge, dailyComboQuery, recordActivity}
