@@ -17,17 +17,19 @@ client.on("ready", () => {
                 .then(res => {
                     if(typeof res === "string") {
                         channel.send(res)
+                        process.exit()
                     } else {
                         channel.send(res[0]+'\n'+res[1][0].join('\n'))
                         for(let i = 1; i < res[1].length; i++) {
                             channel.send(res[1][i].join('\n'))
                         }
+                        process.exit()
                     }
                 }, rej => {
                     channel.send(rej)
+                    process.exit()
                 })
                 .catch(e => recordLog(e, 'error'))
-                .finally(process.exit)
         })
     }
 })
