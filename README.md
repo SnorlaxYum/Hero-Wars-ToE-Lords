@@ -39,7 +39,7 @@ $ sudo chown -R hwtoe:hwtoe /var/lib/hwtoe
 ```
 
 ```
-$ vim /etc/systemd/system/hwtoe.service
+$ sudo vim /etc/systemd/system/hwtoe.service
 ```
 
 As for the inside content, check `systemd/toelords.service`
