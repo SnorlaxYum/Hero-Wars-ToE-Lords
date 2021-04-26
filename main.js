@@ -184,9 +184,10 @@ client.on("message", msg => {
                 db.run(`DELETE FROM video WHERE ${videoArray.map(() => "uri=?").join(" OR ")};`, videoArray, function (err) {
                     if (err) {
                         replyQueryMessagesWrapper(err.message)
+                    } else {
+                        recordLog(`Successfully deleted the videos whose uri are ${videoArray.join(' or ')}`)
+                        replyQueryMessagesWrapper(`Successfully deleted the videos whose uri are ${videoArray.join(' or ')}`)
                     }
-                    recordLog(`Successfully deleted the videos whose uri are ${videoArray.join(' or ')}`)
-                    replyQueryMessagesWrapper(`Successfully deleted the videos whose uri are ${videoArray.join(' or ')}`)
                 })
             }
         } else {
