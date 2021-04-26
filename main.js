@@ -43,29 +43,19 @@ function dailyComboQuery(week, weekday) {
                     reject(`Error: ${err}`)
                 }
                 if (rows.length) {
-                    let combos = [`**Week ${week}, Day ${weekday}:**`], promises = []
-                    rows.forEach(row => {
-                        combos.push(`${row.lord} Lord: ${row.combo}`)
-                        promises.push(new Promise(res => {
-                            db.all(`SELECT lord, combo, player, attackingCombo, point, uri FROM video WHERE combo=?;`, [row.combo], (err2, rows2) => {
-                                if (err2) {
-                                    res(`Error: ${err2}`)
-                                }
-                                res(rows2)
-                            })
-                        }))
-                    })
-                    promises.push(new Promise(res => {
-                        db.all(`SELECT lord, combo, player, attackingCombo, point, uri FROM video WHERE lord=?;`, ["All"], (err2, rows2) => {
+                    let combos = [`**Week ${week}, Day ${weekday}:**`]
+                    combo.push(...rows.map(row => `${row.lord} Lord: ${row.combo}`))
+                    new Promise(res => {
+                        db.all(`SELECT lord, combo, player, attackingCombo, point, uri FROM video WHERE ${[...rows.map(() => "combo=?"), "lord=?"].join(" OR ")};`, [...rows.map(row => row.combo), "All"], (err2, rows2) => {
                             if (err2) {
                                 res(`Error: ${err2}`)
                             }
-                            res(rows2.filter(row => row.combo.indexOf(rows[0].combo) !== -1))
+                            res(rows2.filter(row => rows.map(ro => ro.lord).indexOf(row.lord) !== -1 || (row.lord === "All" && row.combo.indexOf(rows[0].combo) !== -1)))
                         })
-                    }))
-                    Promise.all(promises).then(videos => {
-                        videos = videos.filter(video => typeof video === "object").reduce((a, b) => a.concat(b))
-                        if (videos.length > 0) {
+                    }).then(videos => {
+                        if(typeof videos !== "object") {
+                            resolve(videos)
+                        } else if(videos.length > 0) {
                             combos.push('', 'Maxed versions:')
                             if (videos.length <= 5) {
                                 videos.forEach(video => {
