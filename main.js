@@ -36,8 +36,8 @@ function dailyComboQuery(week, weekday) {
         if(weekday > 5) {
             resolve('ToE already ended......')
         } else {
-            let sql = `SELECT lord, combo FROM combo WHERE week='${week}' AND day=${weekday};`
-            db.all(sql, [], (err, rows) => {
+            let sql = `SELECT lord, combo FROM combo WHERE week=? AND day=?;`
+            db.all(sql, [week, weekday], (err, rows) => {
                 if (err) {
                     reject(`Error: ${err}`)
                 }
@@ -46,7 +46,7 @@ function dailyComboQuery(week, weekday) {
                     rows.forEach(row => {
                         combos.push(`${row.lord} Lord: ${row.combo}`)
                         promises.push(new Promise(res => {
-                            db.all(`SELECT lord, combo, player, attackingCombo, point, uri FROM video WHERE combo='${row.combo}';`, [], (err2, rows2) => {
+                            db.all(`SELECT lord, combo, player, attackingCombo, point, uri FROM video WHERE combo=?;`, [row.combo], (err2, rows2) => {
                                 if (err2) {
                                     res(`Error: ${err2}`)
                                 }
@@ -150,6 +150,22 @@ client.on("message", msg => {
             replyQueryMessagesWrapper("Sorry, u have no permissions to complete this action.")
         }
         
+    } else if (msg.content.startsWith("!lord-video-delete")) {
+        if(adminPermission()) {
+            const videoArray = msg.content.split(" ").slice(1)
+            if(videoArray.length === 0) {
+                replyQueryMessagesWrapper('need at least one uri to complete')
+            } else {
+                db.run(`DELETE FROM video WHERE ${videoArray.map(() => "uri=?").join(" OR ")};`, videoArray, function(err) {
+                    if (err) {
+                        replyQueryMessagesWrapper(err.message)
+                    }
+                    replyQueryMessagesWrapper(`Successfully deleted the videos whose uri are ${videoArray.join(' or ')}`)
+                })
+            }
+        } else {
+            replyQueryMessagesWrapper("Sorry, u have no permissions to complete this action.")
+        }
     } else if (msg.content === "!lord-time") {
         const {week, weekday, time} = weekJudge(), padNum = num => String(num).padStart(2, "0")
         let timeTotalSec = parseInt(time/1000), second = timeTotalSec % 60, min = parseInt(timeTotalSec / 60) % 60, hour = parseInt(timeTotalSec / 60 / 60)
@@ -178,7 +194,9 @@ client.on("message", msg => {
             {command: `!lord-time`, description: `Current time in Lord Format`},
             {command: `!lord-daily-combo`, description: `Lord Combos now.`},
             {command: `!lord-daily-combo <Week> <WeekDay>`, description: `Lord Combos in a specific lord day.`},
-            {command: `!lord-video-add <lord> <combo> <player> <attackingCombo> <point> <uri>`, description: `Add Lord Videos.`},
+            {command: `!lord-video-add[+++]<lord>[+++]<combo>[+++]<player>[+++]<attackingCombo>[+++]<point>[+++]<uri>`, description: `Add Lord Videos.`},
+            {command: `!lord-video-delete <uri>`, description: `Delete Lord Video.`},
+            {command: `!lord-video-delete <uri1> <uri2> ...`, description: `Delete Lord Videos.`},
         ]
         if(params.length === 0) {
             let newMsg = new Discord.MessageEmbed()
