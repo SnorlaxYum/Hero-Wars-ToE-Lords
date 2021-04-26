@@ -299,4 +299,4 @@ try{
     recordActivity(e, 'error')
 }
 
-exports = {weekJudge, dailyComboQuery, recordActivity}
+module.exports = {weekJudge, dailyComboQuery, recordActivity}
