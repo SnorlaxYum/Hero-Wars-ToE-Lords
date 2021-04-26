@@ -34,6 +34,7 @@ Then edit it according to ur need
 $ sudo useradd hwtoe -d /var/lib/hwtoe
 $ sudo mkdir /var/lib/hwtoe
 $ sudo mv * /var/lib/hwtoe
+$ sudo mv .git /var/lib/hwtoe
 $ sudo chown -R hwtoe:hwtoe /var/lib/hwtoe
 ```
 
