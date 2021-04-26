@@ -168,8 +168,8 @@ client.on("message", msg => {
             } else {
                 db.run(`INSERT INTO video(lord, combo, player, attackingCombo, point, uri) VALUES(?, ?, ?, ?, ?, ?)`, videoArray, function(err) {
                     if (err) {
-                        console.log(err.message);
-                        replyQueryMessagesWrapper(err.message)
+                        console.log(`${new Date()} ${err.message}`)
+                        replyQueryMessagesWrapper("An internal error happened.")
                     } else {
                         // get the last insert id
                         console.log(`A row has been inserted with rowid ${this.lastID}`)
