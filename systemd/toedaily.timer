@@ -1,0 +1,9 @@
+[Unit]
+Description=Record and Load the data for ToE Lords - Daily Report - Timer
+
+[Timer]
+OnCalendar=Mon..Fri 7:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,12 @@
+[Unit]
+Description=Record and Load the data for ToE Lords - Daily Report
+
+[Service]
+User=hwtoe
+ExecStart=/the/path/to/node /var/lib/hwtoe/dailyReport.js
+Environment=TOKEN=thediscordbottoken
+Environment=DBPATH=/var/lib/hwtoe/main.db
+Type=oneshot
+
+[Install]
+WantedBy=multi-user.target

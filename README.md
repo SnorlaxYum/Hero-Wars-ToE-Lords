@@ -54,3 +54,23 @@ when it's working, enable it.
 ```
 $ sudo systemctl enable hwtoe
 ```
+
+## Daily Report
+
+```
+$ sudo vim /etc/systemd/system/hwtoedaily.service
+```
+
+As for the inside content, check `systemd/toedaily.service`
+`TOKEN` and `DBPATH` has to be specified to make this correctly work.
+
+```
+$ sudo vim /etc/systemd/system/hwtoedaily.timer
+```
+
+As for the inside content, check `systemd/toedaily.timer`
+OnCalendar value depends on the host's timezone.
+
+```
+$ sudo systemctl start hwtoedaily.timer && sudo systemctl enable hwtoedaily.timer
+```
