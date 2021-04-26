@@ -73,7 +73,7 @@ function dailyComboQuery(week, weekday) {
 
 // query
 client.on("message", msg => {
-    function replyQueryMessages(content, timeout=60*1000) {
+    function replyQueryMessages(content, timeout) {
         msg.reply(content).then(reply => {
             if(timeout > 0) {
                 reply.delete({timeout})
@@ -85,13 +85,20 @@ client.on("message", msg => {
             }
         })
     }
+    function replyQueryMessagesWrapper(content, timeout=60*1000) {
+        if(msg.channel.name.startsWith('bot-command')) {
+            replyQueryMessages(content, -1)
+        } else {
+            replyQueryMessages(`${content}\n\n(Note both messages will be deleted in ${timeout}ms)`, timeout)
+        }
+    }
     if (msg.content === "!ping") {
         msg.reply("pong");
     } else if (msg.content.startsWith("!lord-video-add")) {
         const videoArray = msg.content.split("[+++]").slice(1)
         videoArray[4] = parseInt(videoArray[4])
         if(videoArray.length < 6) {
-            replyQueryMessages('need 6 parameters (lord text, combo text, player text, attackingCombo text, point integer, uri)')
+            replyQueryMessagesWrapper('need 6 parameters (lord text, combo text, player text, attackingCombo text, point integer, uri)')
         } else {
             db.run(`INSERT INTO video(lord, combo, player, attackingCombo, point, uri) VALUES(?, ?, ?, ?, ?, ?)`, videoArray, function(err) {
                 if (err) {
@@ -99,30 +106,30 @@ client.on("message", msg => {
                 }
                 // get the last insert id
                 console.log(`A row has been inserted with rowid ${this.lastID}`)
-                replyQueryMessages(`Successfully added the video for ${videoArray[1]} from ${videoArray[2]}`)
+                replyQueryMessagesWrapper(`Successfully added the video for ${videoArray[1]} from ${videoArray[2]}`)
             })
         }
     } else if (msg.content === "!lord-time") {
         const {week, weekday} = weekJudge()
-        replyQueryMessages(`Week ${week} Day ${weekday}\n(Note both messages will be deleted in 1 min)`)
+        replyQueryMessagesWrapper(`Week ${week} Day ${weekday}`)
     } else if (msg.content.startsWith("!lord-daily-combo")) {
         const comboArray = msg.content.split(" ").slice(1)
         if(comboArray.length === 0) {
             const {week, weekday} = weekJudge()
             dailyComboQuery(week, weekday).then(res => {
-                replyQueryMessages(res, -1)
+                replyQueryMessagesWrapper(res)
             }, rej => {
-                replyQueryMessages(rej, -1)
+                replyQueryMessagesWrapper(rej)
             })
         } else if(comboArray.length === 2) {
             const [week, weekday] = comboArray
             dailyComboQuery(week, weekday).then(res => {
-                replyQueryMessages(res, -1)
+                replyQueryMessagesWrapper(res)
             }, rej => {
-                replyQueryMessages(rej, -1)
+                replyQueryMessagesWrapper(rej)
             })
         } else {
-            replyQueryMessages("Daily combo support only 0 or 2 parameters.")
+            replyQueryMessagesWrapper("Daily combo support only 0 or 2 parameters.")
         }
     }
 })
