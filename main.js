@@ -175,7 +175,14 @@ client.on("message", msg => {
                             .setDescription(
                                 `${things.map((thing, index) => `${index+1}. \`${thing.command}\`\n${thing.description}`).join('\n-----------------------------------------------------------------------------------------------\n')}`
                             )
-                            .setColor(0xff0000)
+            sendMessagesWrapper(newMsg)
+        } else {
+            let results = things.filter(thing => params.map(param => thing.command.indexOf(param) >= 0).reduce((a, b) => a || b)),
+                newMsg = new Discord.MessageEmbed()
+                            .setTitle(`Commands Containing ${params.join(", ")}`)
+                            .setDescription(
+                                `${results.map((thing, index) => `${index+1}. \`${thing.command}\`\n${thing.description}`).join('\n-----------------------------------------------------------------------------------------------\n')}`
+                            )
             sendMessagesWrapper(newMsg)
         }
     }
