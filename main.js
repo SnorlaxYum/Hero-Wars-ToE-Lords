@@ -106,14 +106,20 @@ client.on("message", msg => {
     function replyQueryMessagesWrapper(content, timeout=60*1000) {
         timeout = judgeTimeout(timeout)
         if(timeout >= 0) {
-            content += "\n\n(Note both messages will be deleted in ${timeout}ms)"
+            if(typeof content === "string")
+                content += `\n\n(Note both messages will be deleted in ${timeout}ms)`
+            else
+                content.description += `\n\n(Note both messages will be deleted in ${timeout}ms)`
         }
         replyQueryMessages(content, timeout)
     }
     function sendMessagesWrapper(content, timeout=60*1000) {
         timeout = judgeTimeout(timeout)
         if(timeout >= 0) {
-            content += "\n\n(Note both messages will be deleted in ${timeout}ms)"
+            if(typeof content === "string")
+                content += `\n\n(Note both messages will be deleted in ${timeout}ms)`
+            else
+                content.description += `\n\n(Note both messages will be deleted in ${timeout}ms)`
         }
         sendMessages(content, timeout)
     }
