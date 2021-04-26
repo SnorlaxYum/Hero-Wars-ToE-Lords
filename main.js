@@ -141,8 +141,9 @@ client.on("message", msg => {
             })
         }
     } else if (msg.content === "!lord-time") {
-        const {week, weekday} = weekJudge()
-        replyQueryMessagesWrapper(`Week ${week} Day ${weekday}`)
+        const {week, weekday, time} = weekJudge()
+        let timeTotalSec = time/1000, second = timeTotalSec % 60, min = parseInt(timeTotalSec / 60) % 60, hour = parseInt(timeTotalSec / 60 / 60)
+        replyQueryMessagesWrapper(`Week ${week} Day ${weekday} ${hour}:${min}:${second}`)
     } else if (msg.content.startsWith("!lord-daily-combo")) {
         const comboArray = msg.content.split(" ").slice(1)
         if(comboArray.length === 0) {
@@ -166,7 +167,7 @@ client.on("message", msg => {
         let params = msg.content.split(' ').slice(1), things = [
             {command: `!lord-time`, description: `Current time in Lord Format`},
             {command: `!lord-daily-combo`, description: `Lord Combos now.`},
-            {command: `!lord-daily-combo <Week> <WeekDay>`, description: `Lord Combos now`},
+            {command: `!lord-daily-combo <Week> <WeekDay>`, description: `Lord Combos in a specific lord day.`},
             {command: `!lord-video-add <lord> <combo> <player> <attackingCombo> <point> <uri>`, description: `Add Lord Videos.`},
         ]
         if(params.length === 0) {
