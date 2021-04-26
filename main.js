@@ -185,8 +185,8 @@ client.on("message", msg => {
                     if (err) {
                         replyQueryMessagesWrapper(err.message)
                     } else {
-                        recordLog(`Successfully deleted the videos whose uri are ${videoArray.join(' or ')}`)
-                        replyQueryMessagesWrapper(`Successfully deleted the videos whose uri are ${videoArray.join(' or ')}`)
+                        recordLog(`Successfully deleted the videos whose uri is ${videoArray.join(' or ')}`)
+                        replyQueryMessagesWrapper(`Successfully deleted the videos whose uri is ${videoArray.join(' or ')}`)
                     }
                 })
             }
