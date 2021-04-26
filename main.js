@@ -4,6 +4,10 @@ const adminRoles = require("./adminRoles.json")
 const sqlite3 = require('sqlite3').verbose()
 let db
 
+function recordActivity(message, severity='log') {
+    console[severity](`${new Date} - ${message}`)
+}
+
 // judge the position of the day in a ToE cycle
 function weekJudge() {
     let pos = (new Date() - new Date('2021-04-12T13:00:00+0800'))
@@ -16,12 +20,12 @@ function weekJudge() {
 
 // ready
 client.on("ready", () => {
-  console.log(`Logged in as ${client.user.tag}!`)
+    recordActivity(`Logged in as ${client.user.tag}!`)
   db = new sqlite3.Database('./main.db', (err) => {
     if (err) {
-      console.error(err.message)
+      recordActivity(err, 'error')
     }
-    console.log('Connected to the main database.')
+    recordActivity('Connected to the main database.')
   })
   db.run('CREATE TABLE IF NOT EXISTS combo(week text, day integer, lord text, combo text UNIQUE);')
   db.run('CREATE TABLE IF NOT EXISTS video(lord text, combo text, player text, attackingCombo text, point integer, uri text UNIQUE);')
@@ -106,11 +110,11 @@ client.on("message", msg => {
         msg.reply(content).then(reply => {
             if(timeout > 0) {
                 reply.delete({timeout})
-                    .then(msg1 => console.log(`Deleted message from ${msg1.author.username}.`))
-                    .catch(console.error)
+                    .then(msg1 => recordActivity(`Deleted message from ${msg1.author.username}.`))
+                    .catch(e => recordActivity(e, 'error'))
                 msg.delete({timeout})
-                    .then(msg1 => console.log(`Deleted message from ${msg1.author.username}.`))
-                    .catch(console.error)
+                    .then(msg1 => recordActivity(`Deleted message from ${msg1.author.username}.`))
+                    .catch(e => recordActivity(e, 'error'))
             }
         })
     }
@@ -118,11 +122,11 @@ client.on("message", msg => {
         msg.channel.send(content).then(msg2 => {
             if(timeout > 0) {
                 msg2.delete({timeout})
-                    .then(msg1 => console.log(`Deleted message from ${msg1.author.username}.`))
-                    .catch(console.error)
+                    .then(msg1 => recordActivity(`Deleted message from ${msg1.author.username}.`))
+                    .catch(e => recordActivity(e, 'error'))
                 msg.delete({timeout})
-                    .then(msg1 => console.log(`Deleted message from ${msg1.author.username}.`))
-                    .catch(console.error)
+                    .then(msg1 => recordActivity(`Deleted message from ${msg1.author.username}.`))
+                    .catch(e => recordActivity(e, 'error'))
             }
         })
     }
@@ -168,11 +172,11 @@ client.on("message", msg => {
             } else {
                 db.run(`INSERT INTO video(lord, combo, player, attackingCombo, point, uri) VALUES(?, ?, ?, ?, ?, ?)`, videoArray, function(err) {
                     if (err) {
-                        console.log(`${new Date()} ${err.message}`)
+                        recordActivity(err.message, 'error')
                         replyQueryMessagesWrapper("An internal error happened.")
                     } else {
                         // get the last insert id
-                        console.log(`A row has been inserted with rowid ${this.lastID}`)
+                        recordActivity(`A row has been inserted into video with uri ${this.uri}`)
                         replyQueryMessagesWrapper(`Successfully added the video for ${videoArray[1]} from ${videoArray[2]}`)
                     }
                     
@@ -262,7 +266,7 @@ client.on("message", msg => {
 // about sending things at ToE start
 try{
     client.login(process.env.TOKEN).then(res => {
-        console.log("Request success")
+        recordActivity("Login Request success")
         setInterval(() => {
             const {week, weekday, time} = weekJudge()
             let channels = [...client.channels.cache.values()].filter(ch => ch.name === 'toe-daily')
@@ -285,10 +289,10 @@ try{
             }
         }, 1)
     }, rej => {
-        console.log("Request rejection")
-        console.error(rej)
+        recordActivity("Request rejection")
+        recordActivity(rej, 'error')
     })
 } catch(e) {
-    console.log("Request error")
-    console.dir(e)
+    recordActivity("Request error")
+    recordActivity(e, 'error')
 }
