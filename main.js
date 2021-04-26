@@ -142,7 +142,7 @@ client.on("message", msg => {
         }
     } else if (msg.content === "!lord-time") {
         const {week, weekday, time} = weekJudge()
-        let timeTotalSec = time/1000, second = timeTotalSec % 60, min = parseInt(timeTotalSec / 60) % 60, hour = parseInt(timeTotalSec / 60 / 60)
+        let timeTotalSec = parseInt(time/1000), second = timeTotalSec % 60, min = parseInt(timeTotalSec / 60) % 60, hour = parseInt(timeTotalSec / 60 / 60)
         replyQueryMessagesWrapper(`Week ${week} Day ${weekday} ${hour}:${min}:${second}`)
     } else if (msg.content.startsWith("!lord-daily-combo")) {
         const comboArray = msg.content.split(" ").slice(1)
