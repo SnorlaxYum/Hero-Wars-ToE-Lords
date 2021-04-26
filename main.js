@@ -74,7 +74,6 @@ function dailyComboQuery(week, weekday) {
                                         combos.push(`**${video.lord} Lord (${video.combo})** video from ${video.player} (Attacking Team: **${video.attackingCombo}, ${video.point} points**): ${video.uri}`)
                                     }
                                 })
-                                resolve(combos.join('\n'))
                             } else {
                                 let videoGroups = []
                                 // 5 is the maximum embed number allowed in a single message
@@ -89,9 +88,8 @@ function dailyComboQuery(week, weekday) {
                                 }
                                 resolve([combos.join('\n'), videoGroups])
                             }
-                            
                         }
-                        
+                        resolve(combos.join('\n'))
                     })
                 } else {
                     resolve('Not found, there are only 3 weeks (A, B, C) in a cycle and 5 days (1-5) in a week.')
