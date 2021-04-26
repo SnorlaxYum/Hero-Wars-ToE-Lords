@@ -68,7 +68,7 @@ function dailyComboQuery(week, weekday) {
                             combos.push('', 'Maxed versions:')
                             videos.forEach(video => {
                                 if(video.lord === "All") {
-                                    combos.push(`**${video.lord} Lords** video from ${video.player} (Attacking Team: **${video.attackingCombo}, ${video.point} points**): ${video.uri}`)
+                                    combos.push(`**${video.lord} Lords** video from ${video.player} (Attacking Team: **${video.attackingCombo}**): ${video.uri}`)
                                 } else {
                                     combos.push(`**${video.lord} Lord (${video.combo})** video from ${video.player} (Attacking Team: **${video.attackingCombo}, ${video.point} points**): ${video.uri}`)
                                 }
