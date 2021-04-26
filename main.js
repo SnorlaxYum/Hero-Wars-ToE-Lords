@@ -181,7 +181,7 @@ client.on("message", msg => {
     } else if (msg.content === "!lord-time") {
         const {week, weekday, time} = weekJudge(), padNum = num => String(num).padStart(2, "0")
         let timeTotalSec = parseInt(time/1000), second = timeTotalSec % 60, min = parseInt(timeTotalSec / 60) % 60, hour = parseInt(timeTotalSec / 60 / 60)
-        replyQueryMessagesWrapper(`Week ${week} Day ${weekday} ${padNum(hour)}:${padNum(min)}:${padNum(second)}`)
+        replyQueryMessagesWrapper(`Week ${week} - Day ${weekday} - ${padNum(hour)}:${padNum(min)}:${padNum(second)}`)
     } else if (msg.content.startsWith("!lord-daily-combo")) {
         const comboArray = msg.content.split(" ").slice(1)
         if(comboArray.length === 0) {
