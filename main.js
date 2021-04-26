@@ -160,6 +160,7 @@ client.on("message", msg => {
     } else if (msg.content.startsWith("!lord-video-add")) {
         if(adminPermission()) {
             const videoArray = msg.content.split("[+++]").slice(1)
+            videoArray[0] = /\w+/.exec(videoArray[0])[0]
             videoArray[4] = parseInt(videoArray[4])
             if(videoArray.length < 6) {
                 replyQueryMessagesWrapper('need 6 parameters (lord text, combo text, player text, attackingCombo text, point integer, uri)')
