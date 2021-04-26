@@ -1,17 +1,17 @@
 const Discord = require("discord.js")
 const client = new Discord.Client()
-const {recordLog} = require("./log")
+const { recordLog } = require("./log")
 
-try{
+try {
     client.login(process.env.TOKEN).then(res => {
         recordLog("Login Request success")
     }, rej => {
         recordLog("Request rejection")
         recordLog(rej, 'error')
     })
-} catch(e) {
+} catch (e) {
     recordLog("Request error")
     recordLog(e, 'error')
 }
 
-module.exports = {Discord, client}
+module.exports = { Discord, client }

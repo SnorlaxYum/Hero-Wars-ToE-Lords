@@ -1,6 +1,6 @@
-function recordLog(message, severity='log') {
+function recordLog(message, severity = 'log') {
     // console[severity](`${new Date} - ${message}`)
     console[severity](message)
 }
 
-module.exports = {recordLog}
+module.exports = { recordLog }
