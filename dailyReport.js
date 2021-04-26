@@ -1,5 +1,4 @@
-const Discord = require("discord.js")
-const client = new Discord.Client()
+const {client} = require("./discordLogin")
 const {weekJudge, dailyComboQuery, recordActivity} = require("./main")
 
 // ready

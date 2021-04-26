@@ -1,6 +1,5 @@
-const Discord = require("discord.js")
-const client = new Discord.Client()
 const adminRoles = require("./adminRoles.json")
+const {Discord, client} = require("./discordLogin")
 const sqlite3 = require('sqlite3').verbose()
 let db
 
@@ -264,39 +263,5 @@ client.on("message", msg => {
         }
     }
 })
-
-// about sending things at ToE start
-try{
-    client.login(process.env.TOKEN).then(res => {
-        recordActivity("Login Request success")
-        setInterval(() => {
-            const {week, weekday, time} = weekJudge()
-            let channels = [...client.channels.cache.values()].filter(ch => ch.name === 'toe-daily')
-            if(!channels) return
-            if(channels && time === 0) {
-                channels.forEach(channel => {
-                    dailyComboQuery(week, weekday).then(res => {
-                        if(typeof res === "string") {
-                            channel.send(res)
-                        } else {
-                            channel.send(res[0]+'\n'+res[1][0].join('\n'))
-                            for(let i = 1; i < res[1].length; i++) {
-                                channel.send(res[1][i].join('\n'))
-                            }
-                        }
-                    }, rej => {
-                        channel.send(rej)
-                    })
-                })
-            }
-        }, 1)
-    }, rej => {
-        recordActivity("Request rejection")
-        recordActivity(rej, 'error')
-    })
-} catch(e) {
-    recordActivity("Request error")
-    recordActivity(e, 'error')
-}
 
 module.exports = {weekJudge, dailyComboQuery, recordActivity}
