@@ -215,7 +215,7 @@ client.on("message", msg => {
                     videoArray[1] = comboParser(videoArray[1])
                     videoArray[3] = comboParser(videoArray[3])
                 } catch(e) {
-                    replyQueryMessagesWrapper(e)
+                    return replyQueryMessagesWrapper(e.message)
                 }
             }
             videoArray[4] = parseInt(videoArray[4])
