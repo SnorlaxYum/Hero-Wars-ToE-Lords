@@ -62,14 +62,14 @@ function comboParser(combo) {
         if(/^[4]/.exec(combo)) {
             result.push(...titans.filter(titan1 => titan1.type.toLowerCase().startsWith(combo.slice(1,2)) || titan1.name.toLowerCase().startsWith(combo.slice(2))))
         } else {
-            throw new Error("For exetremely simple abbreviation, only combos like 4FE (4 Fire + Eden) r supported.")
+            throw new Error("for exetremely simple abbreviation, only combos like 4FE (4 Fire + Eden) are supported.")
         }
     }
 
     if(result.length === 5) {
         return result.map(titan2 => titan2.name).join(", ")
     } else {
-        throw new Error(`The combo abbreviation is not a right one. (supported abbreviation examples: 3 sup+nov+sig; 4 fir+sig; 4FE; 4FSi; 4FSy).`)
+        throw new Error(`the combo abbreviation is not a right one. (supported abbreviation examples: 3 sup+nov+sig; 4 fir+sig; 4FE; 4FSi; 4FSy).`)
     }
 }
 
