@@ -38,16 +38,15 @@ db.all(`SELECT uri FROM video;`, (e, rows) => {
         } else if(/drive.google.com\/file\/d\/([0-9A-Za-z_\-]+)/.exec(row.uri)) {
             console.log(row.uri)
             let result = gdrivevideoToShortcut(row.uri)
-            console.dir({id: result[0], param: result[1]})
-            // new Promise((res, rej) => {
-            //     db.run(`UPDATE video SET uri=? WHERE uri=?;`, [`gdrive:${result[0]}${result[1]}`, row.uri], (err) => {
-            //         if(err) {
-            //             rej(err)
-            //         } else {
-            //             res({id: result[0], param: result[1]})
-            //         }
-            //     })
-            // }).then(console.log, console.error)
+            new Promise((res, rej) => {
+                db.run(`UPDATE video SET uri=?, uriParam=? WHERE uri=?;`, [`gdrive:${result[0]}`, result[1], row.uri], (err) => {
+                    if(err) {
+                        rej(err)
+                    } else {
+                        res({id: result[0], param: result[1]})
+                    }
+                })
+            }).then(console.log, console.error)
         }
     })
 })
