@@ -1,91 +1,12 @@
 const adminRoles = require("./adminRoles.json")
 const { Discord, client } = require("./discordLogin")
 const { recordLog } = require("./log")
-const {comboParser, getVideourl, getVideoShortcut, weekJudge} = require("./util")
-const sqlite3 = require('sqlite3').verbose()
-let db
+const {addLordVideo, deleteLordVideos, comboParser, dailyComboQuery, getVideoShortcut, weekJudge} = require("./util")
 
 // ready
 client.on("ready", () => {
     recordLog(`Logged in as ${client.user.tag}!`)
-    db = new sqlite3.Database(process.env.DBPATH, (err) => {
-        if (err) {
-            recordLog(err, 'error')
-        }
-        recordLog('Connected to the main database.')
-    })
-    db.run('CREATE TABLE IF NOT EXISTS combo(week text, day integer, lord text, combo text UNIQUE);')
-    db.run('CREATE TABLE IF NOT EXISTS video(lord text, combo text, player text, attackingCombo text, point integer, uri text UNIQUE, uriParam text);')
 })
-
-/**
- * Query the daily lord combos
- * @param {String} week week
- * @param {Number} weekday day in a week, starting from 1
- */
-function dailyComboQuery(week, weekday) {
-    return new Promise((resolve, reject) => {
-        if (weekday > 5) {
-            resolve('ToE already ended......')
-        } else {
-            db.all(`SELECT lord, combo FROM combo WHERE week=? AND day=?;`, [week, weekday], (err, rows) => {
-                if (err) {
-                    reject(`Error: ${err}`)
-                }
-                if (rows.length) {
-                    let combos = [`**Week ${week}, Day ${weekday}:**`]
-                    combos.push(...rows.map(row => `${row.lord} Lord: ${row.combo}`))
-                    new Promise(res => {
-                        db.all(`SELECT lord, combo, player, attackingCombo, point, uri, uriParam FROM video WHERE ${[...rows.map(() => "combo=?"), "lord=?"].join(" OR ")} ORDER BY lord DESC;`, [...rows.map(row => row.combo), "All"], (err2, rows2) => {
-                            if (err2) {
-                                res(`Error: ${err2}`)
-                            }
-                            res(rows2.filter(row => rows.map(ro => ro.lord).indexOf(row.lord) !== -1 || (row.lord === "All" && row.combo.indexOf(rows[0].combo) !== -1)))
-                        })
-                    }).then(videos => {
-                        if(typeof videos !== "object") {
-                            resolve(videos)
-                        } else if(videos.length > 0) {
-                            videos = videos.map(video => {
-                                let {uri, uriParam} = video
-                                return {
-                                    ...video,
-                                    uri: getVideourl(uri, uriParam)
-                                }
-                            })
-                            combos.push('', 'Maxed versions:')
-                            if (videos.length <= 5) {
-                                videos.forEach(video => {
-                                    if (video.lord === "All") {
-                                        combos.push(`**${video.lord} Lords** video from ${video.player} (Attacking Team: **${video.attackingCombo}**): ${video.uri}`)
-                                    } else {
-                                        combos.push(`**${video.lord} Lord (${video.combo})** video from ${video.player} (Attacking Team: **${video.attackingCombo}, ${video.point} points**): ${video.uri}`)
-                                    }
-                                })
-                            } else {
-                                let videoGroups = []
-                                // 5 is the maximum embed number allowed in a single message
-                                for (let i = 0; i < videos.length; i += 5) {
-                                    videoGroups.push(videos.slice(i, i + 5)
-                                        .map(video => video.lord === "All" ?
-                                            `**${video.lord} Lords** video from ${video.player} (Attacking Team: **${video.attackingCombo}**): ${video.uri}`
-                                            :
-                                            `**${video.lord} Lord (${video.combo})** video from ${video.player} (Attacking Team: **${video.attackingCombo}, ${video.point} points**): ${video.uri}`
-                                        )
-                                    )
-                                }
-                                resolve([combos.join('\n'), videoGroups])
-                            }
-                        }
-                        resolve(combos.join('\n'))
-                    })
-                } else {
-                    resolve('not found, there are only 3 weeks (A, B, C) in a cycle and 5 days (1-5) in a week.')
-                }
-            })
-        }
-    })
-}
 
 // query
 client.on("message", msg => {
@@ -167,7 +88,7 @@ client.on("message", msg => {
             if (videoArray.length < 6) {
                 replyQueryMessagesWrapper('need 6 parameters (lord text, combo text, player text, attackingCombo text, point integer, uri text)')
             } else {
-                db.run(`INSERT INTO video(lord, combo, player, attackingCombo, point, uri, uriParam) VALUES(?, ?, ?, ?, ?, ?, ?)`, videoArray, function (err) {
+                addLordVideo(videoArray, err => {
                     if (err) {
                         recordLog(err.message, 'error')
                         if(err.message.indexOf("UNIQUE constraint failed") !== -1) {
@@ -179,7 +100,6 @@ client.on("message", msg => {
                         recordLog(`A row has been inserted into video with uri ${videoArray[5]}`)
                         replyQueryMessagesWrapper(`successfully added the video for ${videoArray[1]} from ${videoArray[2]}`)
                     }
-
                 })
             }
         } else {
@@ -195,7 +115,7 @@ client.on("message", msg => {
                 videoArray = videoArray.map(uri => {
                     return getVideoShortcut(uri)[0]
                 })
-                db.run(`DELETE FROM video WHERE ${videoArray.map(() => "uri=?").join(" OR ")};`, videoArray, function (err) {
+                deleteLordVideos(videoArray, err => {
                     if (err) {
                         replyQueryMessagesWrapper(err.message)
                     } else {
@@ -267,5 +187,3 @@ client.on("message", msg => {
         }
     }
 })
-
-module.exports = { dailyComboQuery, recordLog }

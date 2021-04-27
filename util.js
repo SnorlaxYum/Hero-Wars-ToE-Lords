@@ -1,3 +1,37 @@
+const sqlite3 = require('sqlite3').verbose()
+const {recordLog} = require("./log")
+
+let db = new sqlite3.Database(process.env.DBPATH, (err) => {
+    if (err) {
+        recordLog(err, 'error')
+    }
+    db.run('CREATE TABLE IF NOT EXISTS combo(week text, day integer, lord text, combo text UNIQUE);')
+    db.run('CREATE TABLE IF NOT EXISTS video(lord text, combo text, player text, attackingCombo text, point integer, uri text UNIQUE, uriParam text);')
+    recordLog('Connected to the main database.')
+})
+
+/**
+ * add lord video
+ * @param {Array<String>} videoArray video info - [lord, combo, player, attackingCombo, point, uri, uriParam]
+ * @param {Function} callback handles the result
+ */
+function addLordVideo(videoArray, callback) {
+    db.run(`INSERT INTO video(lord, combo, player, attackingCombo, point, uri, uriParam) VALUES(?, ?, ?, ?, ?, ?, ?)`, videoArray, function (err) {
+        callback(err)
+    })
+}
+
+/**
+ * delete lord videos
+ * @param {Array<String>} uriArray an array of uris belonging to videos about to be deleted
+ * @param {Function} callback handles the result
+ */
+function deleteLordVideos(uriArray, callback) {
+    db.run(`DELETE FROM video WHERE ${uriArray.map(() => "uri=?").join(" OR ")};`, uriArray, function (err) {
+        callback(err)
+    })
+}
+
 /**
  * judge the position of the day in a ToE cycle
  * @returns {Object}
@@ -71,6 +105,75 @@ function comboParser(combo) {
 }
 
 /**
+ * Query the daily lord combos
+ * @param {String} week week
+ * @param {Number} weekday day in a week, starting from 1
+ */
+function dailyComboQuery(week, weekday) {
+    return new Promise((resolve, reject) => {
+        if (weekday > 5) {
+            resolve('ToE already ended......')
+        } else {
+            db.all(`SELECT lord, combo FROM combo WHERE week=? AND day=?;`, [week, weekday], (err, rows) => {
+                if (err) {
+                    reject(`Error: ${err}`)
+                }
+                if (rows.length) {
+                    let combos = [`**Week ${week}, Day ${weekday}:**`]
+                    combos.push(...rows.map(row => `${row.lord} Lord: ${row.combo}`))
+                    new Promise(res => {
+                        db.all(`SELECT lord, combo, player, attackingCombo, point, uri, uriParam FROM video WHERE ${[...rows.map(() => "combo=?"), "lord=?"].join(" OR ")} ORDER BY lord DESC;`, [...rows.map(row => row.combo), "All"], (err2, rows2) => {
+                            if (err2) {
+                                res(`Error: ${err2}`)
+                            }
+                            res(rows2.filter(row => rows.map(ro => ro.lord).indexOf(row.lord) !== -1 || (row.lord === "All" && row.combo.indexOf(rows[0].combo) !== -1)))
+                        })
+                    }).then(videos => {
+                        if(typeof videos !== "object") {
+                            resolve(videos)
+                        } else if(videos.length > 0) {
+                            videos = videos.map(video => {
+                                let {uri, uriParam} = video
+                                return {
+                                    ...video,
+                                    uri: getVideourl(uri, uriParam)
+                                }
+                            })
+                            combos.push('', 'Maxed versions:')
+                            if (videos.length <= 5) {
+                                videos.forEach(video => {
+                                    if (video.lord === "All") {
+                                        combos.push(`**${video.lord} Lords** video from ${video.player} (Attacking Team: **${video.attackingCombo}**): ${video.uri}`)
+                                    } else {
+                                        combos.push(`**${video.lord} Lord (${video.combo})** video from ${video.player} (Attacking Team: **${video.attackingCombo}, ${video.point} points**): ${video.uri}`)
+                                    }
+                                })
+                            } else {
+                                let videoGroups = []
+                                // 5 is the maximum embed number allowed in a single message
+                                for (let i = 0; i < videos.length; i += 5) {
+                                    videoGroups.push(videos.slice(i, i + 5)
+                                        .map(video => video.lord === "All" ?
+                                            `**${video.lord} Lords** video from ${video.player} (Attacking Team: **${video.attackingCombo}**): ${video.uri}`
+                                            :
+                                            `**${video.lord} Lord (${video.combo})** video from ${video.player} (Attacking Team: **${video.attackingCombo}, ${video.point} points**): ${video.uri}`
+                                        )
+                                    )
+                                }
+                                resolve([combos.join('\n'), videoGroups])
+                            }
+                        }
+                        resolve(combos.join('\n'))
+                    })
+                } else {
+                    resolve('not found, there are only 3 weeks (A, B, C) in a cycle and 5 days (1-5) in a week.')
+                }
+            })
+        }
+    })
+}
+
+/**
  * convert youtube video uri to shortcut
  * @param {String} uri the uri of the youtube video
  * @returns {String[]} converted shortcut
@@ -121,4 +224,4 @@ function getVideourl(uri, uriParam) {
     }
 }
 
-module.exports = {comboParser, youtubeToShortcut, shortcutToYoutube, getVideourl, getVideoShortcut, weekJudge}
+module.exports = {addLordVideo, comboParser, dailyComboQuery, deleteLordVideos, youtubeToShortcut, shortcutToYoutube, getVideourl, getVideoShortcut, weekJudge}
