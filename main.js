@@ -125,7 +125,7 @@ client.on("message", msg => {
         timeout = judgeTimeout(timeout)
         if (timeout >= 0 && delNotification) {
             if (typeof content === "string")
-                content += `\n\n(Note both messages will be deleted in ${timeout}ms)`
+                content += `\n\n(Note these messages will be deleted in ${timeout}ms)`
             else
                 content.description += `\n\n(Note these messages will be deleted in ${timeout}ms)`
         }
@@ -135,7 +135,7 @@ client.on("message", msg => {
         timeout = judgeTimeout(timeout)
         if (timeout >= 0 && delNotification) {
             if (typeof content === "string")
-                content += `\n\n(Note both messages will be deleted in ${timeout}ms)`
+                content += `\n\n(Note these messages will be deleted in ${timeout}ms)`
             else
                 content.description += `\n\n(Note these messages will be deleted in ${timeout}ms)`
         }
