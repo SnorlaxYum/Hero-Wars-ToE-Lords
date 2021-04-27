@@ -14,7 +14,40 @@ function youtubeToShortcut(uri) {
  * @returns {String} the uri of the youtube video
  */
 function shortcutToYoutube(sc, param='') {
-    return `https://youtu.be/${/youtube:([A-Za-z0-9_\-]+)/.exec(sc)[1]}${param}`
+    return `https://youtu.be/${/youtube:([\s\S]+)/.exec(sc)[1]}${param}`
 }
 
-module.exports = {youtubeToShortcut, shortcutToYoutube}
+/**
+ * convert video uri to shortcut uri
+ * @param {String} uri Video uri
+ * @returns {String[]} array with uri and params
+ */
+function getVideoShortcut(uri) {
+    if(/youtube/.exec(uri) || /youtu\.be/.exec(uri)) {
+        let result = youtubeToShortcut(uri)
+        if(result[1].length === 1) {
+            return [`youtube:${result[0]}${result[1]}`, '']
+        } else {
+            return [`youtube:${result[0]}`, result[1]]
+        }
+    } else {
+        // haven't supported yet
+        return [uri, '']
+    }
+}
+
+/**
+ * get full video uri
+ * @param {String} uri Video shortcut uri
+ * @param {String} uriParam Video uri param
+ */
+function getVideourl(uri, uriParam) {
+    if(/^http/.exec(uri)) {
+        return uri
+    }
+    if(/youtube\:([\s\S]+)/.exec(uri)) {
+        return shortcutToYoutube(uri, uriParam)
+    }
+}
+
+module.exports = {youtubeToShortcut, shortcutToYoutube, getVideourl, getVideoShortcut}

@@ -1,7 +1,7 @@
 const adminRoles = require("./adminRoles.json")
 const { Discord, client } = require("./discordLogin")
 const { recordLog } = require("./log")
-const {youtubeToShortcut, shortcutToYoutube} = require("./util")
+const {getVideourl, getVideoShortcut} = require("./util")
 const sqlite3 = require('sqlite3').verbose()
 let db
 
@@ -105,7 +105,7 @@ function dailyComboQuery(week, weekday) {
                     let combos = [`**Week ${week}, Day ${weekday}:**`]
                     combos.push(...rows.map(row => `${row.lord} Lord: ${row.combo}`))
                     new Promise(res => {
-                        db.all(`SELECT lord, combo, player, attackingCombo, point, uri FROM video WHERE ${[...rows.map(() => "combo=?"), "lord=?"].join(" OR ")} ORDER BY lord DESC;`, [...rows.map(row => row.combo), "All"], (err2, rows2) => {
+                        db.all(`SELECT lord, combo, player, attackingCombo, point, uri, uriParam FROM video WHERE ${[...rows.map(() => "combo=?"), "lord=?"].join(" OR ")} ORDER BY lord DESC;`, [...rows.map(row => row.combo), "All"], (err2, rows2) => {
                             if (err2) {
                                 res(`Error: ${err2}`)
                             }
@@ -115,6 +115,13 @@ function dailyComboQuery(week, weekday) {
                         if(typeof videos !== "object") {
                             resolve(videos)
                         } else if(videos.length > 0) {
+                            videos = videos.map(video => {
+                                let {uri, uriParam} = video
+                                return {
+                                    ...video,
+                                    uri: getVideourl(uri, uriParam)
+                                }
+                            })
                             combos.push('', 'Maxed versions:')
                             if (videos.length <= 5) {
                                 videos.forEach(video => {
@@ -220,10 +227,16 @@ client.on("message", msg => {
                 }
             }
             videoArray[4] = parseInt(videoArray[4])
+            
+            // video uri convert
+            let videoFinaluri = getVideoShortcut(videoArray[5])
+            videoArray[5] = videoFinaluri[0]
+            videoArray.push(videoFinaluri[1])
+
             if (videoArray.length < 6) {
-                replyQueryMessagesWrapper('need 6 parameters (lord text, combo text, player text, attackingCombo text, point integer, uri)')
+                replyQueryMessagesWrapper('need 6 parameters (lord text, combo text, player text, attackingCombo text, point integer, uri text)')
             } else {
-                db.run(`INSERT INTO video(lord, combo, player, attackingCombo, point, uri) VALUES(?, ?, ?, ?, ?, ?)`, videoArray, function (err) {
+                db.run(`INSERT INTO video(lord, combo, player, attackingCombo, point, uri, uriParam) VALUES(?, ?, ?, ?, ?, ?, ?)`, videoArray, function (err) {
                     if (err) {
                         recordLog(err.message, 'error')
                         if(err.message.indexOf("UNIQUE constraint failed") !== -1) {
@@ -232,7 +245,6 @@ client.on("message", msg => {
                             replyQueryMessagesWrapper("an internal error happened.")
                         }
                     } else {
-                        // get the last insert id
                         recordLog(`A row has been inserted into video with uri ${videoArray[5]}`)
                         replyQueryMessagesWrapper(`successfully added the video for ${videoArray[1]} from ${videoArray[2]}`)
                     }
@@ -249,6 +261,9 @@ client.on("message", msg => {
             if (videoArray.length === 0) {
                 replyQueryMessagesWrapper('this API needs at least one uri to complete')
             } else {
+                videoArray = videoArray.map(uri => {
+                    return getVideoShortcut(uri)[0]
+                })
                 db.run(`DELETE FROM video WHERE ${videoArray.map(() => "uri=?").join(" OR ")};`, videoArray, function (err) {
                     if (err) {
                         replyQueryMessagesWrapper(err.message)
