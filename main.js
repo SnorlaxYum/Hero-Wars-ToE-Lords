@@ -121,9 +121,9 @@ client.on("message", msg => {
         }
         return timeout
     }
-    function replyQueryMessagesWrapper(content, timeout = 60 * 1000) {
+    function replyQueryMessagesWrapper(content, delNotification=true, timeout = 60 * 1000) {
         timeout = judgeTimeout(timeout)
-        if (timeout >= 0) {
+        if (timeout >= 0 && delNotification) {
             if (typeof content === "string")
                 content += `\n\n(Note both messages will be deleted in ${timeout}ms)`
             else
