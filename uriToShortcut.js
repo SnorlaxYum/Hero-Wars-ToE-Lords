@@ -1,4 +1,4 @@
-const {youtubeToShortcut} = require("./util")
+const {youtubeToShortcut} = require("./utils/util")
 const sqlite3 = require('sqlite3').verbose()
 db = new sqlite3.Database(process.env.DBPATH, (err) => {
     if (err) {

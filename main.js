@@ -1,11 +1,11 @@
 const adminRoles = require("./adminRoles.json")
-const { Discord, client } = require("./discordLogin")
-const { recordLog } = require("./log")
-const {addLordVideo, deleteLordVideos, comboParser, dailyComboQuery, getVideoShortcut, weekJudge} = require("./util")
+const { Discord, client } = require("./utils/discordUtil")
+const { logger } = require("./utils/log")
+const {addLordVideo, deleteLordVideos, comboParser, dailyComboQuery, getVideoShortcut, weekJudge} = require("./utils/util")
 
 // ready
 client.on("ready", () => {
-    recordLog(`Logged in as ${client.user.tag}!`)
+    logger.info(`Logged in as ${client.user.tag}!`)
 })
 
 // query
@@ -14,11 +14,11 @@ client.on("message", msg => {
         msg.reply(content).then(reply => {
             if (timeout > 0) {
                 reply.delete({ timeout })
-                    .then(msg1 => recordLog(`Deleted message from ${msg1.author.username}.`))
-                    .catch(e => recordLog(e, 'error'))
+                    .then(msg1 => logger.info(`Deleted message from ${msg1.author.username}.`))
+                    .catch(e => logger.error(e))
                 msg.delete({ timeout })
-                    .then(msg1 => recordLog(`Deleted message from ${msg1.author.username}.`))
-                    .catch(e => recordLog(e, 'error'))
+                    .then(msg1 => logger.info(`Deleted message from ${msg1.author.username}.`))
+                    .catch(e => logger.error(e))
             }
         })
     }
@@ -26,11 +26,11 @@ client.on("message", msg => {
         msg.channel.send(content).then(msg2 => {
             if (timeout > 0) {
                 msg2.delete({ timeout })
-                    .then(msg1 => recordLog(`Deleted message from ${msg1.author.username}.`))
-                    .catch(e => recordLog(e, 'error'))
+                    .then(msg1 => logger.info(`Deleted message from ${msg1.author.username}.`))
+                    .catch(e => logger.error(e, 'error'))
                 msg.delete({ timeout })
-                    .then(msg1 => recordLog(`Deleted message from ${msg1.author.username}.`))
-                    .catch(e => recordLog(e, 'error'))
+                    .then(msg1 => logger.info(`Deleted message from ${msg1.author.username}.`))
+                    .catch(e => logger.error(e))
             }
         })
     }
@@ -90,14 +90,14 @@ client.on("message", msg => {
             } else {
                 addLordVideo(videoArray, err => {
                     if (err) {
-                        recordLog(err.message, 'error')
+                        logger.error(err.message)
                         if(err.message.indexOf("UNIQUE constraint failed") !== -1) {
                             replyQueryMessagesWrapper("the video is already in the database.")
                         } else {
                             replyQueryMessagesWrapper("an internal error happened.")
                         }
                     } else {
-                        recordLog(`A row has been inserted into video with uri ${videoArray[5]}`)
+                        logger.info(`A row has been inserted into video with uri ${videoArray[5]}`)
                         replyQueryMessagesWrapper(`successfully added the video for ${videoArray[1]} from ${videoArray[2]}`)
                     }
                 })
@@ -119,7 +119,7 @@ client.on("message", msg => {
                     if (err) {
                         replyQueryMessagesWrapper(err.message)
                     } else {
-                        recordLog(`Successfully deleted the videos whose uri is ${videoArray.join(' or ')}`)
+                        logger.info(`Successfully deleted the videos whose uri is ${videoArray.join(' or ')}`)
                         replyQueryMessagesWrapper(`successfully deleted the videos whose uri is ${videoArray.join(' or ')}`)
                     }
                 })

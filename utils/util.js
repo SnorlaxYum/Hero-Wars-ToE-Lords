@@ -1,13 +1,13 @@
 const sqlite3 = require('sqlite3').verbose()
-const {recordLog} = require("./log")
+const {logger} = require("./log")
 
 let db = new sqlite3.Database(process.env.DBPATH, (err) => {
     if (err) {
-        recordLog(err, 'error')
+        logger.error(err)
     }
     db.run('CREATE TABLE IF NOT EXISTS combo(week text, day integer, lord text, combo text UNIQUE);')
     db.run('CREATE TABLE IF NOT EXISTS video(lord text, combo text, player text, attackingCombo text, point integer, uri text UNIQUE, uriParam text);')
-    recordLog('Connected to the main database.')
+    logger.info('Connected to the main database.')
 })
 
 /**
