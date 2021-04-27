@@ -1,6 +1,7 @@
 const adminRoles = require("./adminRoles.json")
 const { Discord, client } = require("./discordLogin")
 const { recordLog } = require("./log")
+const {youtubeToShortcut, shortcutToYoutube} = require("./util")
 const sqlite3 = require('sqlite3').verbose()
 let db
 
@@ -83,7 +84,7 @@ client.on("ready", () => {
         recordLog('Connected to the main database.')
     })
     db.run('CREATE TABLE IF NOT EXISTS combo(week text, day integer, lord text, combo text UNIQUE);')
-    db.run('CREATE TABLE IF NOT EXISTS video(lord text, combo text, player text, attackingCombo text, point integer, uri text UNIQUE);')
+    db.run('CREATE TABLE IF NOT EXISTS video(lord text, combo text, player text, attackingCombo text, point integer, uri text UNIQUE, uriParam text);')
 })
 
 /**
