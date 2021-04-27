@@ -131,9 +131,9 @@ client.on("message", msg => {
         }
         replyQueryMessages(content, timeout)
     }
-    function sendMessagesWrapper(content, timeout = 60 * 1000) {
+    function sendMessagesWrapper(content, delNotification=true, timeout = 60 * 1000) {
         timeout = judgeTimeout(timeout)
-        if (timeout >= 0) {
+        if (timeout >= 0 && delNotification) {
             if (typeof content === "string")
                 content += `\n\n(Note both messages will be deleted in ${timeout}ms)`
             else
@@ -215,9 +215,9 @@ client.on("message", msg => {
                 if (typeof res === "string") {
                     replyQueryMessagesWrapper(res)
                 } else {
-                    replyQueryMessagesWrapper(res[0] + '\n' + res[1][0].join('\n'))
+                    replyQueryMessagesWrapper(res[0] + '\n' + res[1][0].join('\n'), false)
                     for (let i = 1; i < res[1].length; i++) {
-                        msg.channel.send(res[1][i].join('\n'))
+                        sendMessagesWrapper(res[1][i].join('\n'), i + 1 === res[1].length ? true : false)
                     }
                 }
             }, rej => {
