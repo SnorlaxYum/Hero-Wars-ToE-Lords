@@ -6,7 +6,7 @@ let ready = false
 
 // ready
 client.on("ready", () => {
-    recordLog(`Logged in as ${client.user.tag}!`)
+    recordLog(`${client.user.tag} is gonna send the daily report!`)
     const { week, weekday } = weekJudge()
     let channels = [...client.channels.cache.values()].filter(ch => ch.name === 'toe-daily')
     if (!channels) return
