@@ -11,7 +11,7 @@ $ cp examples/main.db.example main.db
 ## Define Admin Roles able to delete or add things
 
 ```
-$ mv examples/adminRoles.json.example adminRoles.json
+$ mv examples/adminRoles.json.example utils/adminRoles.json
 ```
 
 Then edit it according to ur need
