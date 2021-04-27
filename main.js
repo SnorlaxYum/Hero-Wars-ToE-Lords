@@ -9,17 +9,17 @@ client.on("ready", () => {
 
 // query
 client.on("message", msg => {
-    function replyQueryMessagesWrapper(content, delNotification=true, timeout = 60 * 1000) {
+    function replyQueryMessages(content, delNotification=true, timeout = 60 * 1000) {
         replyQueryMessagesWrapperImport(content, delNotification, msg.channel, o => msg.reply(o), o => msg.delete(o), timeout)
     }
-    function sendMessagesWrapper(content, delNotification=true, timeout = 60 * 1000) {
+    function sendMessages(content, delNotification=true, timeout = 60 * 1000) {
         sendMessagesWrapperImport(content, delNotification, msg.channel, o => msg.delete(o), timeout)
     }
     function adminPermission() {
         return adminPermissionImport(msg.member.roles.cache.values(), msg.member.guild.id)
     }
     if (msg.content === "!ping") {
-        replyQueryMessagesWrapper("pong")
+        replyQueryMessages("pong")
     } else if (msg.content.startsWith("!lord-video-add")) {
         if (adminPermission()) {
             const videoArray = msg.content.split("[+++]").slice(1)
@@ -29,7 +29,7 @@ client.on("message", msg => {
                     videoArray[1] = comboParser(videoArray[1])
                     videoArray[3] = comboParser(videoArray[3])
                 } catch(e) {
-                    return replyQueryMessagesWrapper(e.message)
+                    return replyQueryMessages(e.message)
                 }
             }
             videoArray[4] = parseInt(videoArray[4])
@@ -40,51 +40,51 @@ client.on("message", msg => {
             videoArray.push(videoFinaluri[1])
 
             if (videoArray.length < 6) {
-                replyQueryMessagesWrapper('need 6 parameters (lord text, combo text, player text, attackingCombo text, point integer, uri text)')
+                replyQueryMessages('need 6 parameters (lord text, combo text, player text, attackingCombo text, point integer, uri text)')
             } else {
                 addLordVideo(videoArray, err => {
                     if (err) {
                         logger.error(err.message)
                         if(err.message.indexOf("UNIQUE constraint failed") !== -1) {
-                            replyQueryMessagesWrapper("the video is already in the database.")
+                            replyQueryMessages("the video is already in the database.")
                         } else {
-                            replyQueryMessagesWrapper("an internal error happened.")
+                            replyQueryMessages("an internal error happened.")
                         }
                     } else {
                         logger.info(`A row has been inserted into video with uri ${videoArray[5]}`)
-                        replyQueryMessagesWrapper(`successfully added the video for ${videoArray[1]} from ${videoArray[2]}`)
+                        replyQueryMessages(`successfully added the video for ${videoArray[1]} from ${videoArray[2]}`)
                     }
                 })
             }
         } else {
-            replyQueryMessagesWrapper("sorry, you have no permissions to complete this action.")
+            replyQueryMessages("sorry, you have no permissions to complete this action.")
         }
 
     } else if (msg.content.startsWith("!lord-video-delete")) {
         if (adminPermission()) {
             let videoArray = msg.content.split(" ").slice(1)
             if (videoArray.length === 0) {
-                replyQueryMessagesWrapper('this API needs at least one uri to complete')
+                replyQueryMessages('this API needs at least one uri to complete')
             } else {
                 videoArray = videoArray.map(uri => {
                     return getVideoShortcut(uri)[0]
                 })
                 deleteLordVideos(videoArray, err => {
                     if (err) {
-                        replyQueryMessagesWrapper(err.message)
+                        replyQueryMessages(err.message)
                     } else {
                         logger.info(`Successfully deleted the videos whose uri is ${videoArray.join(' or ')}`)
-                        replyQueryMessagesWrapper(`successfully deleted the videos whose uri is ${videoArray.join(' or ')}`)
+                        replyQueryMessages(`successfully deleted the videos whose uri is ${videoArray.join(' or ')}`)
                     }
                 })
             }
         } else {
-            replyQueryMessagesWrapper("sorry, you have no permissions to complete this action.")
+            replyQueryMessages("sorry, you have no permissions to complete this action.")
         }
     } else if (msg.content === "!lord-time") {
         const { week, weekday, time } = weekJudge(), padNum = num => String(num).padStart(2, "0")
         let timeTotalSec = parseInt(time / 1000), second = timeTotalSec % 60, min = parseInt(timeTotalSec / 60) % 60, hour = parseInt(timeTotalSec / 60 / 60)
-        replyQueryMessagesWrapper(`Week ${week} - Day ${weekday} - ${padNum(hour)}:${padNum(min)}:${padNum(second)}`)
+        replyQueryMessages(`Week ${week} - Day ${weekday} - ${padNum(hour)}:${padNum(min)}:${padNum(second)}`)
     } else if (msg.content.startsWith("!lord-daily-combo")) {
         const comboArray = msg.content.split(" ").slice(1)
         if (comboArray.length === 0 || comboArray.length === 2) {
@@ -101,18 +101,18 @@ client.on("message", msg => {
 
             dailyComboQuery(week, weekday).then(res => {
                 if (typeof res === "string") {
-                    replyQueryMessagesWrapper(res)
+                    replyQueryMessages(res)
                 } else {
-                    replyQueryMessagesWrapper(res[0] + '\n' + res[1][0].join('\n'), false)
+                    replyQueryMessages(res[0] + '\n' + res[1][0].join('\n'), false)
                     for (let i = 1; i < res[1].length; i++) {
-                        sendMessagesWrapper(res[1][i].join('\n'), i + 1 === res[1].length ? true : false)
+                        sendMessages(res[1][i].join('\n'), i + 1 === res[1].length ? true : false)
                     }
                 }
             }, rej => {
-                replyQueryMessagesWrapper(rej)
+                replyQueryMessages(rej)
             })
         } else {
-            replyQueryMessagesWrapper("daily combo support only 0 or 2 parameters.")
+            replyQueryMessages("daily combo support only 0 or 2 parameters.")
         }
     } else if (msg.content.startsWith("!help")) {
         let params = msg.content.split(' ').slice(1), things = [
@@ -129,7 +129,7 @@ client.on("message", msg => {
                 .setDescription(
                     `${things.map((thing, index) => `${index + 1}. \`${thing.command}\`\n${thing.description}`).join('\n-----------------------------------------------------------------------------------------------\n')}`
                 )
-            sendMessagesWrapper(newMsg)
+            sendMessages(newMsg)
         } else {
             let results = things.filter(thing => params.map(param => thing.command.indexOf(param) >= 0).reduce((a, b) => a || b)),
                 newMsg = new Discord.MessageEmbed()
@@ -137,7 +137,7 @@ client.on("message", msg => {
                     .setDescription(
                         `${results.map((thing, index) => `${index + 1}. \`${thing.command}\`\n${thing.description}`).join('\n-----------------------------------------------------------------------------------------------\n')}`
                     )
-            sendMessagesWrapper(newMsg)
+            sendMessages(newMsg)
         }
     }
 })
