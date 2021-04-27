@@ -225,7 +225,10 @@ function getVideoShortcut(uri) {
             return [`youtube:${result[0]}`, result[1]]
         }
     }
-
+    if(/drive.google.com\/file\/d\//.exec(uri) || /gdrive:/.exec(uri)) {
+        let result = gdrivevideoToShortcut(uri)
+        return [`gdrive:${result[0]}`, result[1]]
+    }
     // haven't supported yet
     return [uri, '']
 }
