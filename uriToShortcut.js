@@ -1,4 +1,4 @@
-const {youtubeToShortcut} = require("./utils/util")
+const {youtubeToShortcut, gdrivevideoToShortcut} = require("./utils/util")
 const sqlite3 = require('sqlite3').verbose()
 db = new sqlite3.Database(process.env.DBPATH, (err) => {
     if (err) {
@@ -13,7 +13,7 @@ db.all(`SELECT uri FROM video;`, (e, rows) => {
         throw e
     }
     rows.forEach(row => {
-        if(/youtube/.exec(row.uri) || /youtu\.be/.exec(row.uri)) {
+        if(/youtube\.com/.exec(row.uri) || /youtu\.be/.exec(row.uri)) {
             console.log(row.uri)
             let result = youtubeToShortcut(row.uri)
             new Promise((res, rej) => {
@@ -35,6 +35,19 @@ db.all(`SELECT uri FROM video;`, (e, rows) => {
                     })
                 }
             }).then(console.log, console.error)
+        } else if(/drive.google.com\/file\/d\/([0-9A-Za-z_\-]+)/.exec(row.uri)) {
+            console.log(row.uri)
+            let result = gdrivevideoToShortcut(row.uri)
+            console.dir({id: result[0], param: result[1]})
+            // new Promise((res, rej) => {
+            //     db.run(`UPDATE video SET uri=? WHERE uri=?;`, [`gdrive:${result[0]}${result[1]}`, row.uri], (err) => {
+            //         if(err) {
+            //             rej(err)
+            //         } else {
+            //             res({id: result[0], param: result[1]})
+            //         }
+            //     })
+            // }).then(console.log, console.error)
         }
     })
 })

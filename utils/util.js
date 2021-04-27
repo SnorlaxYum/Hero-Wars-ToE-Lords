@@ -185,10 +185,30 @@ function youtubeToShortcut(uri) {
 /**
  * convert shortcut to youtube video uri
  * @param {String} sc converted shortcut
+ * @param {String} param param of the video
  * @returns {String} the uri of the youtube video
  */
 function shortcutToYoutube(sc, param='') {
     return `https://youtu.be/${/youtube:([\s\S]+)/.exec(sc)[1]}${param?param:''}`
+}
+
+/**
+ * convert google drive video uri to shortcut
+ * @param {String} uri the uri of the google drive video
+ * @returns {String[]} converted shortcut
+ */
+function gdrivevideoToShortcut(uri) {
+    return [/drive.google.com\/file\/d\/([0-9A-Za-z_\-]+)/.exec(uri) ? /drive.google.com\/file\/d\/([0-9A-Za-z_\-]+)/.exec(uri)[1] : /gdrive:([0-9A-Za-z_\-]+)/.exec(uri)[1], '']
+}
+
+/**
+ * convert shortcut to google drive video uri
+ * @param {String} sc converted shortcut
+ * @param {String} param param of the video
+ * @returns {String} the uri of the google drive video
+ */
+function shortcutTogdrivevideo(sc, param) {
+    return `https://drive.google.com/file/d//${/gdrive:([0-9A-Za-z_\-]+)/.exec(uri)[1]}${param?param:''}`
 }
 
 /**
@@ -222,6 +242,9 @@ function getVideourl(uri, uriParam) {
     if(/youtube\:([\s\S]+)/.exec(uri)) {
         return shortcutToYoutube(uri, uriParam)
     }
+    if(/gdrive\:([\s\S]+)/.exec(uri)) {
+        return shortcutTogdrivevideo(uri, uriParam)
+    }
 }
 
-module.exports = {addLordVideo, comboParser, dailyComboQuery, deleteLordVideos, youtubeToShortcut, shortcutToYoutube, getVideourl, getVideoShortcut, weekJudge}
+module.exports = {addLordVideo, comboParser, dailyComboQuery, deleteLordVideos, gdrivevideoToShortcut, youtubeToShortcut, shortcutToYoutube, shortcutTogdrivevideo, getVideourl, getVideoShortcut, weekJudge}
