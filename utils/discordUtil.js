@@ -1,7 +1,7 @@
 const Discord = require("discord.js")
 const client = new Discord.Client()
 const { logger } = require("./log")
-const {adminRoles} = require("./adminRoles.json")
+const adminRoles = require("../adminRoles")
 
 try {
     client.login(process.env.TOKEN).then(res => {
@@ -115,5 +115,4 @@ function adminPermissionImport(rolesValues, guildId) {
     const rolesList = Array.from(rolesValues).map(i => i.name)
     return adminRoles.filter(admin => rolesList.indexOf(admin.name) !== -1).filter(admin => admin.guildId === guildId).length > 0
 }
-process.f
 module.exports = { Discord, client, replyQueryMessagesWrapperImport, sendMessagesWrapperImport, adminPermissionImport }
