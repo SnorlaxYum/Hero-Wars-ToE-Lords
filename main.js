@@ -127,7 +127,7 @@ client.on("message", msg => {
             if (typeof content === "string")
                 content += `\n\n(Note both messages will be deleted in ${timeout}ms)`
             else
-                content.description += `\n\n(Note both messages will be deleted in ${timeout}ms)`
+                content.description += `\n\n(Note these messages will be deleted in ${timeout}ms)`
         }
         replyQueryMessages(content, timeout)
     }
@@ -137,7 +137,7 @@ client.on("message", msg => {
             if (typeof content === "string")
                 content += `\n\n(Note both messages will be deleted in ${timeout}ms)`
             else
-                content.description += `\n\n(Note both messages will be deleted in ${timeout}ms)`
+                content.description += `\n\n(Note these messages will be deleted in ${timeout}ms)`
         }
         sendMessages(content, timeout)
     }
