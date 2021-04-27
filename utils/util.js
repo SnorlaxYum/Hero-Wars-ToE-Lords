@@ -198,7 +198,7 @@ function shortcutToYoutube(sc, param='') {
  * @returns {String[]} converted shortcut
  */
 function gdrivevideoToShortcut(uri) {
-    return [/drive.google.com\/file\/d\/([0-9A-Za-z_\-]+)/.exec(uri) ? /drive.google.com\/file\/d\/([0-9A-Za-z_\-]+)/.exec(uri)[1] : /gdrive:([0-9A-Za-z_\-]+)/.exec(uri)[1], '']
+    return /drive.google.com\/file\/d\/([0-9A-Za-z_\-]+)\/([\s\S]+)/.exec(uri) ? /drive.google.com\/file\/d\/([0-9A-Za-z_\-]+)\/([\s\S]+)/.exec(uri).slice(1) : /gdrive:([0-9A-Za-z_\-]+)\/([\s\S]+)/.exec(uri).slice(1)
 }
 
 /**
@@ -208,7 +208,7 @@ function gdrivevideoToShortcut(uri) {
  * @returns {String} the uri of the google drive video
  */
 function shortcutTogdrivevideo(sc, param) {
-    return `https://drive.google.com/file/d/${/gdrive:([0-9A-Za-z_\-]+)/.exec(sc)[1]}${param?param:''}`
+    return `https://drive.google.com/file/d/${/gdrive:([0-9A-Za-z_\-]+)/.exec(sc)[1]}/${param?param:''}`
 }
 
 /**
