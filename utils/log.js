@@ -9,7 +9,7 @@ const logger = {
         console.info(msg)
     },
     log(msg) {
-        console.log('\x1b[37m\x1b[47m', msg)
+        console.log(msg)
     },
     warn(msg) {
         console.warn(msg)
