@@ -82,7 +82,7 @@ function dailyComboQuery(week, weekday) {
                         resolve(combos.join('\n'))
                     })
                 } else {
-                    resolve('Not found, there are only 3 weeks (A, B, C) in a cycle and 5 days (1-5) in a week.')
+                    resolve('not found, there are only 3 weeks (A, B, C) in a cycle and 5 days (1-5) in a week.')
                 }
             })
         }
@@ -159,39 +159,39 @@ client.on("message", msg => {
                     if (err) {
                         recordLog(err.message, 'error')
                         if(err.message.indexOf("UNIQUE constraint failed") !== -1) {
-                            replyQueryMessagesWrapper("The video is already in the database.")
+                            replyQueryMessagesWrapper("the video is already in the database.")
                         } else {
-                            replyQueryMessagesWrapper("An internal error happened.")
+                            replyQueryMessagesWrapper("an internal error happened.")
                         }
                     } else {
                         // get the last insert id
                         recordLog(`A row has been inserted into video with uri ${videoArray[5]}`)
-                        replyQueryMessagesWrapper(`Successfully added the video for ${videoArray[1]} from ${videoArray[2]}`)
+                        replyQueryMessagesWrapper(`successfully added the video for ${videoArray[1]} from ${videoArray[2]}`)
                     }
 
                 })
             }
         } else {
-            replyQueryMessagesWrapper("Sorry, you have no permissions to complete this action.")
+            replyQueryMessagesWrapper("sorry, you have no permissions to complete this action.")
         }
 
     } else if (msg.content.startsWith("!lord-video-delete")) {
         if (adminPermission()) {
             const videoArray = msg.content.split(" ").slice(1)
             if (videoArray.length === 0) {
-                replyQueryMessagesWrapper('This API needs at least one uri to complete')
+                replyQueryMessagesWrapper('this API needs at least one uri to complete')
             } else {
                 db.run(`DELETE FROM video WHERE ${videoArray.map(() => "uri=?").join(" OR ")};`, videoArray, function (err) {
                     if (err) {
                         replyQueryMessagesWrapper(err.message)
                     } else {
                         recordLog(`Successfully deleted the videos whose uri is ${videoArray.join(' or ')}`)
-                        replyQueryMessagesWrapper(`Successfully deleted the videos whose uri is ${videoArray.join(' or ')}`)
+                        replyQueryMessagesWrapper(`successfully deleted the videos whose uri is ${videoArray.join(' or ')}`)
                     }
                 })
             }
         } else {
-            replyQueryMessagesWrapper("Sorry, you have no permissions to complete this action.")
+            replyQueryMessagesWrapper("sorry, you have no permissions to complete this action.")
         }
     } else if (msg.content === "!lord-time") {
         const { week, weekday, time } = weekJudge(), padNum = num => String(num).padStart(2, "0")
@@ -224,7 +224,7 @@ client.on("message", msg => {
                 replyQueryMessagesWrapper(rej)
             })
         } else {
-            replyQueryMessagesWrapper("Daily combo support only 0 or 2 parameters.")
+            replyQueryMessagesWrapper("daily combo support only 0 or 2 parameters.")
         }
     } else if (msg.content.startsWith("!help")) {
         let params = msg.content.split(' ').slice(1), things = [
