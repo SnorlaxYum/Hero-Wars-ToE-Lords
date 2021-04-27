@@ -5,7 +5,7 @@
  * @returns {String[]} converted shortcut
  */
 function youtubeToShortcut(uri) {
-    return /youtube.com\/watch\?v\=([A-Za-z0-9_\-]+)([\s\S]+)/.exec(uri) ? /youtube.com\/watch\?v\=([A-Za-z0-9_\-]+)([\s\S]+)/.exec(uri).slice(1) : /youtu.be\/([A-Za-z0-9\_\-]+)([\s\S]+)/.exec(uri).slice(1)
+    return /youtube.com\/watch\?v\=([A-Za-z0-9_\-]+)([\s\S]+)/.exec(uri) ? /youtube.com\/watch\?v\=([A-Za-z0-9_\-]+)([\s\S]+)/.exec(uri).slice(1) : /youtu.be\/([A-Za-z0-9\_\-]+)([\s\S]+)/.exec(uri) ? /youtu.be\/([A-Za-z0-9\_\-]+)([\s\S]+)/.exec(uri).slice(1) : /youtube:([A-Za-z0-9\_\-]+)([\s\S]+)/.exec(uri).slice(1)
 }
 
 /**
@@ -30,10 +30,10 @@ function getVideoShortcut(uri) {
         } else {
             return [`youtube:${result[0]}`, result[1]]
         }
-    } else {
-        // haven't supported yet
-        return [uri, '']
     }
+
+    // haven't supported yet
+    return [uri, '']
 }
 
 /**
