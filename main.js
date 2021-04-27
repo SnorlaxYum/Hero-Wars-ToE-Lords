@@ -16,7 +16,7 @@ client.on("message", msg => {
         sendMessagesWrapperImport(content, delNotification, msg.channel, o => msg.delete(o), timeout)
     }
     function adminPermission() {
-        adminPermissionImport(msg.member.roles.cache.values(), msg.member.guild.id)
+        return adminPermissionImport(msg.member.roles.cache.values(), msg.member.guild.id)
     }
     if (msg.content === "!ping") {
         replyQueryMessagesWrapper("pong")
