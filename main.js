@@ -14,6 +14,65 @@ function weekJudge() {
     return { week, weekday, time }
 }
 
+/**
+ * parse a string to a set of titans
+ * @param {String} combo the combo to be parsed to a complete team
+ * @returns {String} complete team
+ */
+function comboParser(combo) {
+    const titans = [
+        {name: "Sylva", type: "Earth"},
+        {name: "Ignis", type: "Fire"},
+        {name: "Hyperion", type: "Water", role: "Super"},
+        {name: "Eden", type: "Earth", role: "Super"},
+        {name: "Araji", type: "Fire", role: "Super"},
+        {name: "Malri", type: "Water"},
+        {name: "Avalon", type: "Earth"},
+        {name: "Vulcan", type: "Fire"},
+        {name: "Nova", type: "Water"},
+        {name: "Angus", type: "Earth"},
+        {name: "Moluch", type: "Fire"},
+        {name: "Sigurd", type: "Water"}
+    ]
+    combo = combo.replace(/ /g, '')
+    let result = []
+    if(combo.indexOf("+") !== -1 || combo.indexOf(",") !== -1) {
+        if(combo.indexOf(",") !== -1) {
+            combo = combo.toLowerCase().split(",")
+        } else {
+            combo = combo.toLowerCase().split("+")
+        }
+
+        let filters = []
+
+        for(let titan of combo) {
+            if(/^[34]/.exec(titan)) {
+                if(titan.slice(1) === "super" || titan.slice(1).startsWith("s")) {
+                    filters.push(titan1 => titan1.role === "Super")
+                } else {
+                    filters.push(titan1 => titan1.type.toLowerCase().startsWith(titan.slice(1)))
+                }
+            } else {
+                filters.push(titan1 => titan1.name.toLowerCase().startsWith(titan))
+            }
+        }
+        
+        result.push(...titans.filter(titan1 => filters.reduce((a, b) => typeof a === "function" ? a(titan1) || b(titan1) : a || b(titan1))))
+    } else {
+        if(/^[4]/.exec(combo)) {
+            result.push(...titans.filter(titan1 => titan1.type.toLowerCase().startsWith(combo.slice(1,2)) || titan1.name.toLowerCase().startsWith(combo.slice(2))))
+        } else {
+            throw new Error("For exetremely simple abbreviation, only combos like 4FE (4 Fire + Eden) r supported.")
+        }
+    }
+
+    if(result.length === 5) {
+        return result.map(titan2 => titan2.name).join(", ")
+    } else {
+        throw new Error(`The combo abbreviation is not a right one. (supported abbreviation examples: 3 sup+nov+sig; 4 fir+sig; 4FE; 4FSi; 4FSy).`)
+    }
+}
+
 // ready
 client.on("ready", () => {
     recordLog(`Logged in as ${client.user.tag}!`)
