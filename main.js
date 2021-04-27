@@ -1,5 +1,4 @@
-const adminRoles = require("./adminRoles.json")
-const { Discord, client } = require("./utils/discordUtil")
+const { Discord, client, replyQueryMessagesWrapperImport, sendMessagesWrapperImport, adminPermissionImport } = require("./utils/discordUtil")
 const { logger } = require("./utils/log")
 const {addLordVideo, deleteLordVideos, comboParser, dailyComboQuery, getVideoShortcut, weekJudge} = require("./utils/util")
 
@@ -10,62 +9,17 @@ client.on("ready", () => {
 
 // query
 client.on("message", msg => {
-    function replyQueryMessages(content, timeout) {
-        msg.reply(content).then(reply => {
-            if (timeout > 0) {
-                reply.delete({ timeout })
-                    .then(msg1 => logger.info(`Deleted message from ${msg1.author.username}.`))
-                    .catch(e => logger.error(e))
-                msg.delete({ timeout })
-                    .then(msg1 => logger.info(`Deleted message from ${msg1.author.username}.`))
-                    .catch(e => logger.error(e))
-            }
-        })
-    }
-    function sendMessages(content, timeout) {
-        msg.channel.send(content).then(msg2 => {
-            if (timeout > 0) {
-                msg2.delete({ timeout })
-                    .then(msg1 => logger.info(`Deleted message from ${msg1.author.username}.`))
-                    .catch(e => logger.error(e, 'error'))
-                msg.delete({ timeout })
-                    .then(msg1 => logger.info(`Deleted message from ${msg1.author.username}.`))
-                    .catch(e => logger.error(e))
-            }
-        })
-    }
-    function judgeTimeout(timeout) {
-        if (msg.channel.name.startsWith('bot-command')) {
-            return -1
-        }
-        return timeout
-    }
     function replyQueryMessagesWrapper(content, delNotification=true, timeout = 60 * 1000) {
-        timeout = judgeTimeout(timeout)
-        if (timeout >= 0 && delNotification) {
-            if (typeof content === "string")
-                content += `\n\n(Note these messages will be deleted in ${timeout}ms)`
-            else
-                content.description += `\n\n(Note these messages will be deleted in ${timeout}ms)`
-        }
-        replyQueryMessages(content, timeout)
+        replyQueryMessagesWrapperImport(content, delNotification, msg, timeout)
     }
     function sendMessagesWrapper(content, delNotification=true, timeout = 60 * 1000) {
-        timeout = judgeTimeout(timeout)
-        if (timeout >= 0 && delNotification) {
-            if (typeof content === "string")
-                content += `\n\n(Note these messages will be deleted in ${timeout}ms)`
-            else
-                content.description += `\n\n(Note these messages will be deleted in ${timeout}ms)`
-        }
-        sendMessages(content, timeout)
+        sendMessagesWrapperImport(content, delNotification, msg, timeout)
     }
     function adminPermission() {
-        const rolesList = Array.from(msg.member.roles.cache.values()).map(i => i.name), guildId = msg.member.guild.id
-        return adminRoles.filter(admin => rolesList.indexOf(admin.name) !== -1).filter(admin => admin.guildId === guildId).length > 0
+        adminPermissionImport(msg)
     }
     if (msg.content === "!ping") {
-        msg.reply("pong");
+        replyQueryMessagesWrapper("pong")
     } else if (msg.content.startsWith("!lord-video-add")) {
         if (adminPermission()) {
             const videoArray = msg.content.split("[+++]").slice(1)
