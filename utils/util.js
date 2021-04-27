@@ -208,7 +208,7 @@ function gdrivevideoToShortcut(uri) {
  * @returns {String} the uri of the google drive video
  */
 function shortcutTogdrivevideo(sc, param) {
-    return `https://drive.google.com/file/d//${/gdrive:([0-9A-Za-z_\-]+)/.exec(sc)[1]}${param?param:''}`
+    return `https://drive.google.com/file/d/${/gdrive:([0-9A-Za-z_\-]+)/.exec(sc)[1]}${param?param:''}`
 }
 
 /**
