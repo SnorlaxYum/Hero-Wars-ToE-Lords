@@ -10,13 +10,13 @@ client.on("ready", () => {
 // query
 client.on("message", msg => {
     function replyQueryMessagesWrapper(content, delNotification=true, timeout = 60 * 1000) {
-        replyQueryMessagesWrapperImport(content, delNotification, msg, timeout)
+        replyQueryMessagesWrapperImport(content, delNotification, msg.channel, o => msg.reply(o), o => msg.delete(o), timeout)
     }
     function sendMessagesWrapper(content, delNotification=true, timeout = 60 * 1000) {
-        sendMessagesWrapperImport(content, delNotification, msg, timeout)
+        sendMessagesWrapperImport(content, delNotification, msg.channel, o => msg.delete(o), timeout)
     }
     function adminPermission() {
-        adminPermissionImport(msg)
+        adminPermissionImport(msg.member)
     }
     if (msg.content === "!ping") {
         replyQueryMessagesWrapper("pong")
