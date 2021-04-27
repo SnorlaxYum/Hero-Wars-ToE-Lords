@@ -211,8 +211,12 @@ client.on("message", msg => {
             const videoArray = msg.content.split("[+++]").slice(1)
             videoArray[0] = /\w+/.exec(videoArray[0])[0]
             if(videoArray[0] !== "All") {
-                videoArray[1] = comboParser(videoArray[1])
-                videoArray[3] = comboParser(videoArray[3])
+                try {
+                    videoArray[1] = comboParser(videoArray[1])
+                    videoArray[3] = comboParser(videoArray[3])
+                } catch(e) {
+                    replyQueryMessagesWrapper(e)
+                }
             }
             videoArray[4] = parseInt(videoArray[4])
             if (videoArray.length < 6) {
