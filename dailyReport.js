@@ -1,6 +1,7 @@
 const { client } = require("./discordLogin")
 const { recordLog } = require("./log")
-const { weekJudge, dailyComboQuery } = require("./main")
+const { weekJudge } = require("./util")
+const { dailyComboQuery } = require("./main")
 
 let ready = false
 
