@@ -14,7 +14,7 @@ function youtubeToShortcut(uri) {
  * @returns {String} the uri of the youtube video
  */
 function shortcutToYoutube(sc, param='') {
-    return `https://youtu.be/${/youtube:([\s\S]+)/.exec(sc)[1]}${param}`
+    return `https://youtu.be/${/youtube:([\s\S]+)/.exec(sc)[1]}${param?param:''}`
 }
 
 /**
