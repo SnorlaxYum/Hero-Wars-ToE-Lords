@@ -22,7 +22,7 @@ client.on("ready", () => {
                         for (let i = 1; i < res[1].length; i++) {
                             pros.push(channel.send(res[1][i].join('\n')))
                         }
-                        Promise.all(process.exit)
+                        Promise.all(pros).then(process.exit)
                     }
                 }, rej => {
                     channel.send(rej).then(process.exit)
