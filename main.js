@@ -257,7 +257,7 @@ client.on("message", msg => {
 
     } else if (msg.content.startsWith("!lord-video-delete")) {
         if (adminPermission()) {
-            const videoArray = msg.content.split(" ").slice(1)
+            let videoArray = msg.content.split(" ").slice(1)
             if (videoArray.length === 0) {
                 replyQueryMessagesWrapper('this API needs at least one uri to complete')
             } else {
