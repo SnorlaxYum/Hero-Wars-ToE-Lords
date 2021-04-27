@@ -109,9 +109,10 @@ function sendMessagesWrapperImport(content, delNotification=true, channel, mdel,
 /**
  * see if the querying person has the permission to delete or add videos
  * @param {Object} member
+ * @param {String} guildId
  */
-function adminPermissionImport(member) {
-    const rolesList = Array.from(member.roles.cache.values()).map(i => i.name), guildId = member.guild.id
+function adminPermissionImport(rolesValues, guildId) {
+    const rolesList = Array.from(rolesValues).map(i => i.name)
     return adminRoles.filter(admin => rolesList.indexOf(admin.name) !== -1).filter(admin => admin.guildId === guildId).length > 0
 }
 
