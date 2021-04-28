@@ -37,7 +37,7 @@ function commandDailyComboCheck(args, msg) {
             } else {
                 msg.reply(res[0] + '\n' + res[1][0].join('\n'), false)
                 for (let i = 1; i < res[1].length; i++) {
-                    msg.send(res[1][i].join('\n'), i + 1 === res[1].length ? true : false)
+                    msg.channel.send(res[1][i].join('\n'), i + 1 === res[1].length ? true : false)
                 }
             }
         }, rej => {
@@ -61,7 +61,7 @@ function commandHelp(args, msg) {
             .setDescription(
                 `${commands.map(descriptionParser).join('\n-----------------------------------------------------------------------------------------------\n')}`
             )
-        msg.send(newMsg)
+        msg.channel.send(newMsg)
     } else {
         let results = commands.filter(command => args.map(param => command.prefix.indexOf(param) >= 0).reduce((a, b) => a || b)),
             newMsg = new MessageEmbed()
@@ -69,7 +69,7 @@ function commandHelp(args, msg) {
                 .setDescription(
                     `${results.map(descriptionParser).join('\n-----------------------------------------------------------------------------------------------\n')}`
                 )
-        msg.send(newMsg)
+        msg.channel.send(newMsg)
     }
 }
 
