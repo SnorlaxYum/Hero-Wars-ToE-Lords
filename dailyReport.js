@@ -1,12 +1,11 @@
 const { client } = require("./utils/discord")
-const { logger } = require("./utils/log")
 const { weekJudge, dailyComboQuery } = require("./utils/common")
 
 let ready = false
 
 // ready
 client.on("ready", () => {
-    logger.log(`${client.user.tag} is gonna send the daily report!`)
+    console.log(`${client.user.tag} is gonna send the daily report!`)
     const { week, weekday } = weekJudge()
     let channels = [...client.channels.cache.values()].filter(ch => ch.name === 'toe-daily')
     if (!channels) return
@@ -27,7 +26,7 @@ client.on("ready", () => {
                 }, rej => {
                     channel.send(rej).then(process.exit)
                 })
-                .catch(e => logger.error(e))
+                .catch(e => console.error(e))
         })
     }
 })
