@@ -147,12 +147,20 @@ function commandVideoDelete(msgCon, guildMember, replyMessage) {
             videoArray = videoArray.map(uri => {
                 return getVideoShortcut(uri)[0]
             })
-            deleteLordVideos(videoArray, err => {
+            deleteLordVideos(videoArray, (err, res) => {
                 if (err) {
                     replyMessage(err.message)
                 } else {
-                    console.info(`Successfully deleted the videos whose uri is ${videoArray.join(' or ')}`)
-                    replyMessage(`successfully deleted the videos whose uri is ${videoArray.join(' or ')}`)
+                    if(res.changes === 0) {
+                        console.error(`No video was deleted.`)
+                        replyMessage(`no video was deleted.`)
+                    } else if(res.changes === 1) {
+                        console.info(`Successfully deleted the video whose uri is ${videoArray.join(' or ')}`)
+                        replyMessage(`successfully deleted the video whose uri is ${videoArray.join(' or ')}`)
+                    } else {
+                        console.info(`Successfully deleted ${res.changes} videos whose uri are ${videoArray.join(' or ')}`)
+                        replyMessage(`successfully deleted ${res.changes} videos whose uri are ${videoArray.join(' or ')}`)
+                    }
                 }
             })
         }

@@ -1,6 +1,6 @@
-const sqlite3 = require('sqlite3').verbose()
+const {Database, RunResult} = require('sqlite3').verbose()
 
-let db = new sqlite3.Database(process.env.DBPATH, (err) => {
+let db = new Database(process.env.DBPATH, (err) => {
     if (err) {
         console.error(err)
     }
@@ -23,11 +23,11 @@ function addLordVideo(videoArray, callback) {
 /**
  * delete lord videos
  * @param {Array<String>} uriArray an array of uris belonging to videos about to be deleted
- * @param {Function} callback handles the result
+ * @param {(err: Error, res: RunResult) => void} callback handles the result
  */
 function deleteLordVideos(uriArray, callback) {
     db.run(`DELETE FROM video WHERE ${uriArray.map(() => "uri=?").join(" OR ")};`, uriArray, function (err) {
-        callback(err)
+        callback(err, this)
     })
 }
 
