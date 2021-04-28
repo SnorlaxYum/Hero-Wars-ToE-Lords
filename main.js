@@ -8,5 +8,5 @@ client.on("ready", () => {
 
 // query
 client.on("message", msg => {
-    commandCenter(msg.content, msg.channel, msg.member, msg.reply, msg.delete)
+    commandCenter(msg.content, msg.channel, msg.member, o => msg.reply(o), o => msg.delete(o))
 })
