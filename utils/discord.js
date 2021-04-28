@@ -102,11 +102,10 @@ function sendMessagesWrapperImport(content, msg, delNotification=true, timeout =
 
 /**
  * see if the querying person has the permission to delete or add videos
- * @param {Object} member querying member
- * @param {String} guildId message guild's id
+ * @param {Discord.Message} msg query message
  */
-function adminPermissionImport(rolesValues, guildId) {
-    const rolesList = Array.from(rolesValues).map(i => i.name)
-    return adminRoles.filter(admin => rolesList.indexOf(admin.name) !== -1).filter(admin => admin.guildId === guildId).length > 0
+function adminPermission(msg) {
+    const rolesList = Array.from(msg.member.roles.cache.values()).map(i => i.name)
+    return adminRoles.filter(admin => rolesList.indexOf(admin.name) !== -1).filter(admin => admin.guildId === msg.member.guild.id).length > 0
 }
-module.exports = { Discord, client, replyQueryMessagesWrapperImport, sendMessagesWrapperImport, adminPermissionImport }
+module.exports = { Discord, client, replyQueryMessagesWrapperImport, sendMessagesWrapperImport, adminPermission }

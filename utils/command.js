@@ -1,17 +1,9 @@
 const commands = require("../commands.json")
 const { prefix } = require("../config.json")
 const { addLordVideo, deleteLordVideos, comboParser, dailyComboQuery, getVideoShortcut, weekJudge } = require("./common")
-const { replyQueryMessagesWrapperImport, sendMessagesWrapperImport, adminPermissionImport } = require("./discord")
-const { GuildMember, Message, MessageEmbed, TextChannel, StringResolvable, APIMessage } = require("./discord").Discord
-
-/**
- * check if the member has admin permission
- * @param {GuildMember} guildMember guild member info object
- * @returns {Boolean} whether he has the admin permission
- */
-function adminPermission(guildMember) {
-    return adminPermissionImport(guildMember.roles.cache.values(), guildMember.guild.id)
-}
+const { replyQueryMessagesWrapperImport, sendMessagesWrapperImport, adminPermission } = require("./discord")
+const { GuildMember, Message, MessageEmbed, TextChannel, StringResolvable, APIMessage, Collection } = require("./discord").Discord
+const fs = require("fs")
 
 /**
  * check the daily lord combo according to the given date
@@ -173,22 +165,29 @@ function commandCenter(msg) {
         return
     }
     let commandFull = msg.content.slice(prefix.length).trim(), args = /^lord-video-add/.exec(commandFull) ? commandFull.split("[+++]") : commandFull.split(/ +/),
-    command = args.shift().toLowerCase()
+    command = args.shift().toLowerCase(),
+    commandFiles = fs.readdirSync("../commands").filter(file => file.endsWith(".js")),
+    commands = new Collection()
 
-    if (command === "ping") {
-        replyQueryMessages("pong")
-    } else if (command === "lord-video-add") {
-        commandVideoAdd(args, msg)
-    } else if (command === "lord-video-delete") {
-        commandVideoDelete(args, msg)
-    } else if (command === "lord-time") {
-        commandTimeCheck(args, msg)
-    } else if (command === "lord-daily-combo") {
-        commandDailyComboCheck(args, msg)
-    } else if (command === "lord-daily") {
-        commandDailyComboCheck(args, msg)
-    } else if (command === "help") {
-        commandHelp(args, msg)
+    for(let file of commandFiles) {
+        let commandInfo = require(`../commands/${file}`)
+        commands.set(commandInfo.name, commandInfo)
+        if(commandInfo.alias) {
+            for(let alia of commandInfo.alias) {
+                commands.set(alia, {isAlias: true, exec: commandInfo.exec})
+            }
+        }
+    }
+
+    if(!commands.has(command)) {
+        return
+    }
+
+    try {
+        commands.get(command).exec(args, msg)
+    } catch(e) {
+        console.error(e.message)
+        msg.reply("an error occurred.")
     }
 }
 
