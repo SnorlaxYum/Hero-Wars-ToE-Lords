@@ -16,18 +16,17 @@ try {
 
 /**
  * reply a query message (both query message and reply messages will be deleted if a timeout is specified)
- * @param {Object|String} content discord message
+ * @param {Object|String} content sending content
+ * @param {Discord.Message} msg query message
  * @param {Number} timeout after this number of ms the messages will be deleted
- * @param {Function} mreply reply callack
- * @param {Function} mdel delete callback
  */
-function replyQueryMessagesImport(content, timeout, mreply, mdel) {
-    mreply(content).then(reply => {
+function replyQueryMessagesImport(content, msg, timeout) {
+    msg.reply(content).then(reply => {
         if (timeout > 0) {
             reply.delete({ timeout })
                 .then(msg1 => console.info(`Deleted message from ${msg1.author.username}.`))
                 .catch(e => console.error(e))
-            mdel({ timeout })
+            msg.delete({ timeout })
                 .then(msg1 => console.info(`Deleted message from ${msg1.author.username}.`))
                 .catch(e => console.error(e))
         }
@@ -37,17 +36,16 @@ function replyQueryMessagesImport(content, timeout, mreply, mdel) {
 /**
  * send a message after a query message is sent (both query message and reply messages will be deleted if a timeout is specified)
  * @param {Object|String} content discord message
+ * @param {Discord.Message} msg query message
  * @param {Number} timeout after this number of ms the messages will be deleted
- * @param {Object} channel message channel
- * @param {Function} mdel delete callback
  */
-function sendMessagesImport(content, timeout, channel, mdel) {
-    channel.send(content).then(msg2 => {
+function sendMessagesImport(content, msg, timeout) {
+    msg.channel.send(content).then(msg2 => {
         if (timeout > 0) {
             msg2.delete({ timeout })
                 .then(msg1 => console.info(`Deleted message from ${msg1.author.username}.`))
                 .catch(e => console.error(e, 'error'))
-            mdel({ timeout })
+            msg.delete({ timeout })
                 .then(msg1 => console.info(`Deleted message from ${msg1.author.username}.`))
                 .catch(e => console.error(e))
         }
@@ -56,11 +54,11 @@ function sendMessagesImport(content, timeout, channel, mdel) {
 
 /**
  * judge timeout number
+ * @param {Discord.Message} msg query message
  * @param {Number} timeout after this number of ms the messages will be deleted if they're in a channel not intended for bots
- * @param {Object} channel message channel
  */
-function judgeTimeoutImport(timeout, channel) {
-    if (channel.name.startsWith('bot-command')) {
+function judgeTimeoutImport(msg, timeout) {
+    if (msg.channel.name.startsWith('bot-command')) {
         return -1
     }
     return timeout
@@ -68,41 +66,38 @@ function judgeTimeoutImport(timeout, channel) {
 
 /**
  * reply a query message (both query message and reply messages will be deleted if the obtained timeout is positive )
- * @param {Object|String} content discord message 
+ * @param {Object|String} content sending content 
+ * @param {Discord.Message} msg query message
  * @param {Boolean} delNotification whether to show delete notification text
- * @param {Object} channel message channel
- * @param {Function} mreply reply callback
- * @param {Function} mdel delete callback
  * @param {Number} timeout after this number of ms the messages will be deleted if the obtained timeout is positive
  */
-function replyQueryMessagesWrapperImport(content, delNotification=true, channel, mreply, mdel, timeout = 60 * 1000) {
-    timeout = judgeTimeoutImport(timeout, channel)
+function replyQueryMessagesWrapperImport(content, msg, delNotification=true, timeout = 60 * 1000) {
+    timeout = judgeTimeoutImport(timeout, msg.channel)
     if (timeout >= 0 && delNotification) {
         if (typeof content === "string")
             content += `\n\n(Note these messages will be deleted in ${timeout}ms)`
         else
             content.description += `\n\n(Note these messages will be deleted in ${timeout}ms)`
     }
-    replyQueryMessagesImport(content, timeout, mreply, mdel)
+    replyQueryMessagesImport(content, msg, timeout)
 }
 
 /**
  * send a message after a query message is sent (both query message and reply messages will be deleted if the obtained timeout is positive)
  * @param {Object|String} content discord message 
+ * @param {Discord.Message} msg query message
  * @param {Boolean} delNotification whether to show delete notification text
- * @param {Object} channel message channel
- * @param {Function} mdel delete callback
  * @param {Number} timeout after this number of ms the messages will be deleted if the obtained timeout is positive
  */
-function sendMessagesWrapperImport(content, delNotification=true, channel, mdel, timeout = 60 * 1000) {
-    timeout = judgeTimeoutImport(timeout, channel)
+function sendMessagesWrapperImport(content, msg, delNotification=true, timeout = 60 * 1000) {
+    timeout = judgeTimeoutImport(msg, timeout)
     if (timeout >= 0 && delNotification) {
         if (typeof content === "string")
             content += `\n\n(Note these messages will be deleted in ${timeout}ms)`
         else
             content.description += `\n\n(Note these messages will be deleted in ${timeout}ms)`
     }
-    sendMessagesImport(content, timeout, channel, mdel)
+    sendMessagesImport(content, msg, timeout)
 }
 
 /**

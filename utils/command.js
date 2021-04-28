@@ -16,11 +16,9 @@ function adminPermission(guildMember) {
 /**
  * check the daily lord combo according to the given date
  * @param {String} args command arguments
- * @param {GuildMember} guildMember guild member info object
- * @param {(msg: StringResolvable|APIMessage) => void} sendMessage function responsible for sending the message
- * @param {(msg: StringResolvable|APIMessage) => void} replyMessage function responsible for replying the message
+ * @param {Discord.Message} msg query message
  */
-function commandDailyComboCheck(args, guildMember, sendMessage, replyMessage) {
+function commandDailyComboCheck(args, msg) {
     if (args.length === 0 || args.length === 2) {
         let week, weekday
         if (args.length === 0) {
@@ -35,29 +33,27 @@ function commandDailyComboCheck(args, guildMember, sendMessage, replyMessage) {
 
         dailyComboQuery(week, weekday).then(res => {
             if (typeof res === "string") {
-                replyMessage(res)
+                msg.reply(res)
             } else {
-                replyMessage(res[0] + '\n' + res[1][0].join('\n'), false)
+                msg.reply(res[0] + '\n' + res[1][0].join('\n'), false)
                 for (let i = 1; i < res[1].length; i++) {
-                    sendMessage(res[1][i].join('\n'), i + 1 === res[1].length ? true : false)
+                    msg.send(res[1][i].join('\n'), i + 1 === res[1].length ? true : false)
                 }
             }
         }, rej => {
-            replyMessage(rej)
+            msg.reply(rej)
         })
     } else {
-        replyMessage("daily combo support only 0 or 2 parameters.")
+        msg.reply("daily combo support only 0 or 2 parameters.")
     }
 }
 
 /**
  * help command, manual for the bot user
  * @param {String} args command arguments
- * @param {GuildMember} guildMember guild member info object
- * @param {(msg: MessageEmbed) => void} sendMessage function responsible for sending the message
- * @param {(msg: StringResolvable|APIMessage) => void} replyMessage function responsible for replying the message
+ * @param {Discord.Message} msg query message
  */
-function commandHelp(args, guildMember, sendMessage, replyMessage) {
+function commandHelp(args, msg) {
     let descriptionParser = (command, index) => `${index + 1}. \`${command.prefix}\`\n${command.description}${command.alias ? "\nAlias: `" + command.alias + "`" : ""}`
     if (args.length === 0) {
         let newMsg = new MessageEmbed()
@@ -65,7 +61,7 @@ function commandHelp(args, guildMember, sendMessage, replyMessage) {
             .setDescription(
                 `${commands.map(descriptionParser).join('\n-----------------------------------------------------------------------------------------------\n')}`
             )
-        sendMessage(newMsg)
+        msg.send(newMsg)
     } else {
         let results = commands.filter(command => args.map(param => command.prefix.indexOf(param) >= 0).reduce((a, b) => a || b)),
             newMsg = new MessageEmbed()
@@ -73,39 +69,35 @@ function commandHelp(args, guildMember, sendMessage, replyMessage) {
                 .setDescription(
                     `${results.map(descriptionParser).join('\n-----------------------------------------------------------------------------------------------\n')}`
                 )
-        sendMessage(newMsg)
+        msg.send(newMsg)
     }
 }
 
 /**
  * check current lord time
  * @param {String} args command arguments
- * @param {GuildMember} guildMember guild member info object
- * @param {(msg: MessageEmbed) => void} sendMessage function responsible for sending the message
- * @param {(msg: StringResolvable|APIMessage) => void} replyMessage function responsible for replying the message
+ * @param {Discord.Message} msg query message
  */
-function commandTimeCheck(args, guildMember, sendMessage, replyMessage) {
+function commandTimeCheck(args, msg) {
     const { week, weekday, time } = weekJudge(), padNum = num => String(num).padStart(2, "0")
     let timeTotalSec = parseInt(time / 1000), second = timeTotalSec % 60, min = parseInt(timeTotalSec / 60) % 60, hour = parseInt(timeTotalSec / 60 / 60)
-    replyMessage(`Week ${week} - Day ${weekday} - ${padNum(hour)}:${padNum(min)}:${padNum(second)}`)
+    msg.reply(`Week ${week} - Day ${weekday} - ${padNum(hour)}:${padNum(min)}:${padNum(second)}`)
 }
 
 /**
  * add a lord video
  * @param {String} args command arguments
- * @param {GuildMember} guildMember guild member info object
- * @param {(msg: MessageEmbed) => void} sendMessage function responsible for sending the message
- * @param {(msg: StringResolvable|APIMessage) => void} replyMessage function responsible for replying the message
+ * @param {Discord.Message} msg query message
  */
-function commandVideoAdd(args, guildMember, sendMessage, replyMessage) {
-    if (adminPermission(guildMember)) {
+function commandVideoAdd(args, msg) {
+    if (adminPermission(msg.member)) {
         args[0] = /\w+/.exec(args[0])[0]
         if (args[0] !== "All") {
             try {
                 args[1] = comboParser(args[1])
                 args[3] = comboParser(args[3])
             } catch (e) {
-                return replyMessage(e.message)
+                return msg.reply(e.message)
             }
         }
         args[4] = parseInt(args[4])
@@ -116,100 +108,87 @@ function commandVideoAdd(args, guildMember, sendMessage, replyMessage) {
         args.push(videoFinaluri[1])
 
         if (args.length < 6) {
-            replyMessage('need 6 parameters (lord text, combo text, player text, attackingCombo text, point integer, uri text)')
+            msg.reply('need 6 parameters (lord text, combo text, player text, attackingCombo text, point integer, uri text)')
         } else {
             addLordVideo(args, err => {
                 if (err) {
                     console.error(err.message)
                     if (err.message.indexOf("UNIQUE constraint failed") !== -1) {
-                        replyMessage("the video is already in the database.")
+                        msg.reply("the video is already in the database.")
                     } else {
-                        replyMessage("an internal error happened.")
+                        msg.reply("an internal error happened.")
                     }
                 } else {
                     console.info(`A row has been inserted into video with uri ${args[5]}`)
-                    replyMessage(`successfully added the video for ${args[1]} from ${args[2]}`)
+                    msg.reply(`successfully added the video for ${args[1]} from ${args[2]}`)
                 }
             })
         }
     } else {
-        replyMessage("sorry, you have no permissions to complete this action.")
+        msg.reply("sorry, you have no permissions to complete this action.")
     }
 }
 
 /**
  * delete lord videos from the given uris
  * @param {String} args command arguments
- * @param {GuildMember} guildMember guild member info object
- * @param {(msg: MessageEmbed) => void} sendMessage function responsible for sending the message
- * @param {(msg: StringResolvable|APIMessage) => void} replyMessage function responsible for replying the message
+ * @param {Discord.Message} msg query message
  */
-function commandVideoDelete(args, guildMember, sendMessage, replyMessage) {
-    if (adminPermission(guildMember)) {
+function commandVideoDelete(args, msg) {
+    if (adminPermission(msg.member)) {
         if (args.length === 0) {
-            replyMessage('this API needs at least one uri to complete')
+            msg.reply('this API needs at least one uri to complete')
         } else {
             args = args.map(uri => {
                 return getVideoShortcut(uri)[0]
             })
             deleteLordVideos(args, (err, res) => {
                 if (err) {
-                    replyMessage(err.message)
+                    msg.reply(err.message)
                 } else {
                     if(res.changes === 0) {
                         console.error(`No video was deleted.`)
-                        replyMessage(`no video was deleted.`)
+                        msg.reply(`no video was deleted.`)
                     } else if(res.changes === 1) {
                         console.info(`Successfully deleted the video whose uri is ${args.join(' or ')}`)
-                        replyMessage(`successfully deleted the video whose uri is ${args.join(' or ')}`)
+                        msg.reply(`successfully deleted the video whose uri is ${args.join(' or ')}`)
                     } else {
                         console.info(`Successfully deleted ${res.changes} videos whose uri are ${args.join(' or ')}`)
-                        replyMessage(`successfully deleted ${res.changes} videos whose uri are ${args.join(' or ')}`)
+                        msg.reply(`successfully deleted ${res.changes} videos whose uri are ${args.join(' or ')}`)
                     }
                 }
             })
         }
     } else {
-        replyMessage("sorry, you have no permissions to complete this action.")
+        msg.reply("sorry, you have no permissions to complete this action.")
     }
 }
 
 /**
  * parse command string and get the job done.
- * @param {String} msgCon message content
- * @param {TextChannel} msgChannel message content
- * @param {GuildMember} guildMember guild member info object
- * @param {(msg: StringResolvable|APIMessage) => Promise<(Message|Array<Message>)>} replyMessage function responsible for replying the message
- * @param {(option: Object) => Promise<Message>} deleteMessage function responsible for deleting the message
+ * @param {Object} msg message object
  */
-function commandCenter(msgCon, msgChannel, guildMember, replyMessage, deleteMessage) {
-    if(!msgCon.startsWith(prefix)) {
+function commandCenter(msg) {
+    if(!msg.content.startsWith(prefix)) {
         return
     }
-    let commandFull = msgCon.slice(prefix.length).trim(), args = /^lord-video-add/.exec(commandFull) ? commandFull.split("[+++]") : commandFull.split(/ +/),
+    let commandFull = msg.content.slice(prefix.length).trim(), args = /^lord-video-add/.exec(commandFull) ? commandFull.split("[+++]") : commandFull.split(/ +/),
     command = args.shift().toLowerCase()
-
-    function replyQueryMessages(content, delNotification = true, timeout = 60 * 1000) {
-        replyQueryMessagesWrapperImport(content, delNotification, msgChannel, o => replyMessage(o), o => deleteMessage(o), timeout)
-    }
-    function sendMessages(content, delNotification = true, timeout = 60 * 1000) {
-        sendMessagesWrapperImport(content, delNotification, msgChannel, o => deleteMessage(o), timeout)
-    }
 
     if (command === "ping") {
         replyQueryMessages("pong")
     } else if (command === "lord-video-add") {
-        commandVideoAdd(args, guildMember, sendMessages, replyQueryMessages)
+        commandVideoAdd(args, msg)
     } else if (command === "lord-video-delete") {
-        commandVideoDelete(args, guildMember, sendMessages, replyQueryMessages)
+        commandVideoDelete(args, msg)
     } else if (command === "lord-time") {
-        commandTimeCheck(args, guildMember, sendMessages, replyQueryMessages)
+        commandTimeCheck(args, msg)
     } else if (command === "lord-daily-combo") {
-        commandDailyComboCheck(args, guildMember, sendMessages, replyQueryMessages)
+        commandDailyComboCheck(args, msg)
     } else if (command === "lord-daily") {
-        commandDailyComboCheck(args, guildMember, sendMessages, replyQueryMessages)
+        commandDailyComboCheck(args, msg)
     } else if (command === "help") {
-        commandHelp(args, guildMember, sendMessages, replyQueryMessages)
+        commandHelp(args, msg)
     }
 }
 
