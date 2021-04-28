@@ -1,6 +1,6 @@
-const { Discord, client, replyQueryMessagesWrapperImport, sendMessagesWrapperImport, adminPermissionImport } = require("./utils/discordUtil")
+const { Discord, client, replyQueryMessagesWrapperImport, sendMessagesWrapperImport, adminPermissionImport } = require("./utils/discord")
 const { logger } = require("./utils/log")
-const {addLordVideo, deleteLordVideos, comboParser, dailyComboQuery, getVideoShortcut, weekJudge} = require("./utils/util")
+const {addLordVideo, deleteLordVideos, comboParser, dailyComboQuery, getVideoShortcut, weekJudge} = require("./utils/common")
 
 // ready
 client.on("ready", () => {
@@ -115,6 +115,7 @@ client.on("message", msg => {
             replyQueryMessages("daily combo support only 0 or 2 parameters.")
         }
     } else if (msg.content.startsWith("!help")) {
+        // this feature is gonna be realized in the database. and the related work will be moved to utils.
         let params = msg.content.split(' ').slice(1), things = [
             { command: `!lord-time`, description: `Current time in Lord Format` },
             { command: `!lord-daily-combo`, description: `Lord Combos now.` },
