@@ -1,10 +1,9 @@
 const { client } = require("./utils/discord")
-const { logger } = require("./utils/log")
 const {commandCenter} = require("./utils/command")
 
 // ready
 client.on("ready", () => {
-    logger.info(`Logged in as ${client.user.tag}!`)
+    console.info(`Logged in as ${client.user.tag}!`)
 })
 
 // query

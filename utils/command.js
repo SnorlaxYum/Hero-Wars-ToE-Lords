@@ -72,14 +72,14 @@ function commandCenter(msgCon, msgChannel, guildMember, replyMessage, deleteMess
             } else {
                 addLordVideo(videoArray, err => {
                     if (err) {
-                        logger.error(err.message)
+                        console.error(err.message)
                         if(err.message.indexOf("UNIQUE constraint failed") !== -1) {
                             replyQueryMessages("the video is already in the database.")
                         } else {
                             replyQueryMessages("an internal error happened.")
                         }
                     } else {
-                        logger.info(`A row has been inserted into video with uri ${videoArray[5]}`)
+                        console.info(`A row has been inserted into video with uri ${videoArray[5]}`)
                         replyQueryMessages(`successfully added the video for ${videoArray[1]} from ${videoArray[2]}`)
                     }
                 })
@@ -101,7 +101,7 @@ function commandCenter(msgCon, msgChannel, guildMember, replyMessage, deleteMess
                     if (err) {
                         replyQueryMessages(err.message)
                     } else {
-                        logger.info(`Successfully deleted the videos whose uri is ${videoArray.join(' or ')}`)
+                        console.info(`Successfully deleted the videos whose uri is ${videoArray.join(' or ')}`)
                         replyQueryMessages(`successfully deleted the videos whose uri is ${videoArray.join(' or ')}`)
                     }
                 })

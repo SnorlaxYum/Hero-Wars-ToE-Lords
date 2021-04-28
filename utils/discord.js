@@ -1,18 +1,17 @@
 const Discord = require("discord.js")
 const client = new Discord.Client()
-const { logger } = require("./log")
 const adminRoles = require("../adminRoles")
 
 try {
     client.login(process.env.TOKEN).then(res => {
-        logger.info("Login Request success")
+        console.info("Login Request success")
     }, rej => {
-        logger.info("Request rejection")
-        logger.error(rej)
+        console.info("Request rejection")
+        console.error(rej)
     })
 } catch (e) {
-    logger.info("Request error")
-    logger.error(e)
+    console.info("Request error")
+    console.error(e)
 }
 
 /**
@@ -26,11 +25,11 @@ function replyQueryMessagesImport(content, timeout, mreply, mdel) {
     mreply(content).then(reply => {
         if (timeout > 0) {
             reply.delete({ timeout })
-                .then(msg1 => logger.info(`Deleted message from ${msg1.author.username}.`))
-                .catch(e => logger.error(e))
+                .then(msg1 => console.info(`Deleted message from ${msg1.author.username}.`))
+                .catch(e => console.error(e))
             mdel({ timeout })
-                .then(msg1 => logger.info(`Deleted message from ${msg1.author.username}.`))
-                .catch(e => logger.error(e))
+                .then(msg1 => console.info(`Deleted message from ${msg1.author.username}.`))
+                .catch(e => console.error(e))
         }
     })
 }
@@ -46,11 +45,11 @@ function sendMessagesImport(content, timeout, channel, mdel) {
     channel.send(content).then(msg2 => {
         if (timeout > 0) {
             msg2.delete({ timeout })
-                .then(msg1 => logger.info(`Deleted message from ${msg1.author.username}.`))
-                .catch(e => logger.error(e, 'error'))
+                .then(msg1 => console.info(`Deleted message from ${msg1.author.username}.`))
+                .catch(e => console.error(e, 'error'))
             mdel({ timeout })
-                .then(msg1 => logger.info(`Deleted message from ${msg1.author.username}.`))
-                .catch(e => logger.error(e))
+                .then(msg1 => console.info(`Deleted message from ${msg1.author.username}.`))
+                .catch(e => console.error(e))
         }
     })
 }
