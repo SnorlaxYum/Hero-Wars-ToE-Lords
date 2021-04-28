@@ -1,5 +1,5 @@
 const commands = require("../commands.json")
-const {addLordVideo, deleteLordVideos, comboParser, dailyComboQuery, getVideoShortcut, weekJudge} = require("./common")
+const { addLordVideo, deleteLordVideos, comboParser, dailyComboQuery, getVideoShortcut, weekJudge } = require("./common")
 const { replyQueryMessagesWrapperImport, sendMessagesWrapperImport, adminPermissionImport } = require("./discord")
 const { GuildMember, Message, MessageEmbed, TextChannel, StringResolvable, APIMessage } = require("./discord").Discord
 
@@ -13,11 +13,48 @@ function adminPermission(guildMember) {
 }
 
 /**
+ * check the daily lord combo according to the given date
+ * @param {String} msgCon message content
+ * @param {(msg: StringResolvable|APIMessage) => void} sendMessage function responsible for sending the message
+ * @param {(msg: StringResolvable|APIMessage) => void} replyMessage function responsible for replying the message
+ */
+function commandDailyComboCheck(msgCon, sendMessage, replyMessage) {
+    const comboArray = msgCon.split(" ").slice(1)
+    if (comboArray.length === 0 || comboArray.length === 2) {
+        let week, weekday
+        if (comboArray.length === 0) {
+            let date = weekJudge()
+            week = date.week
+            weekday = date.weekday
+        } else {
+            let [week1, weekday1] = comboArray
+            week = week1
+            weekday = weekday1
+        }
+
+        dailyComboQuery(week, weekday).then(res => {
+            if (typeof res === "string") {
+                replyMessage(res)
+            } else {
+                replyMessage(res[0] + '\n' + res[1][0].join('\n'), false)
+                for (let i = 1; i < res[1].length; i++) {
+                    sendMessage(res[1][i].join('\n'), i + 1 === res[1].length ? true : false)
+                }
+            }
+        }, rej => {
+            replyMessage(rej)
+        })
+    } else {
+        replyMessage("daily combo support only 0 or 2 parameters.")
+    }
+}
+
+/**
  * help command, manual for the bot user
  * @param {String} msgCon message content
- * @param {(msg: MessageEmbed) => void} sendMessages function responsible for sending message
+ * @param {(msg: MessageEmbed) => void} sendMessage function responsible for sending the message
  */
-function commandHelp(msgCon, sendMessages) {
+function commandHelp(msgCon, sendMessage) {
     let params = msgCon.split(' ').slice(1)
     if (params.length === 0) {
         let newMsg = new MessageEmbed()
@@ -25,7 +62,7 @@ function commandHelp(msgCon, sendMessages) {
             .setDescription(
                 `${commands.map((command, index) => `${index + 1}. \`${command.prefix}\`\n${command.description}`).join('\n-----------------------------------------------------------------------------------------------\n')}`
             )
-        sendMessages(newMsg)
+        sendMessage(newMsg)
     } else {
         let results = commands.filter(command => params.map(param => command.prefix.indexOf(param) >= 0).reduce((a, b) => a || b)),
             newMsg = new MessageEmbed()
@@ -33,7 +70,7 @@ function commandHelp(msgCon, sendMessages) {
                 .setDescription(
                     `${results.map((command, index) => `${index + 1}. \`${command.prefix}\`\n${command.description}`).join('\n-----------------------------------------------------------------------------------------------\n')}`
                 )
-        sendMessages(newMsg)
+        sendMessage(newMsg)
     }
 }
 
@@ -57,16 +94,16 @@ function commandVideoAdd(msgCon, guildMember, replyMessage) {
     if (adminPermission(guildMember)) {
         const videoArray = msgCon.split("[+++]").slice(1)
         videoArray[0] = /\w+/.exec(videoArray[0])[0]
-        if(videoArray[0] !== "All") {
+        if (videoArray[0] !== "All") {
             try {
                 videoArray[1] = comboParser(videoArray[1])
                 videoArray[3] = comboParser(videoArray[3])
-            } catch(e) {
+            } catch (e) {
                 return replyMessage(e.message)
             }
         }
         videoArray[4] = parseInt(videoArray[4])
-        
+
         // video uri convert
         let videoFinaluri = getVideoShortcut(videoArray[5])
         videoArray[5] = videoFinaluri[0]
@@ -78,7 +115,7 @@ function commandVideoAdd(msgCon, guildMember, replyMessage) {
             addLordVideo(videoArray, err => {
                 if (err) {
                     console.error(err.message)
-                    if(err.message.indexOf("UNIQUE constraint failed") !== -1) {
+                    if (err.message.indexOf("UNIQUE constraint failed") !== -1) {
                         replyMessage("the video is already in the database.")
                     } else {
                         replyMessage("an internal error happened.")
@@ -132,10 +169,10 @@ function commandVideoDelete(msgCon, guildMember, replyMessage) {
  * @param {(option: Object) => Promise<Message>} deleteMessage function responsible for deleting the message
  */
 function commandCenter(msgCon, msgChannel, guildMember, replyMessage, deleteMessage) {
-    function replyQueryMessages(content, delNotification=true, timeout = 60 * 1000) {
+    function replyQueryMessages(content, delNotification = true, timeout = 60 * 1000) {
         replyQueryMessagesWrapperImport(content, delNotification, msgChannel, o => replyMessage(o), o => deleteMessage(o), timeout)
     }
-    function sendMessages(content, delNotification=true, timeout = 60 * 1000) {
+    function sendMessages(content, delNotification = true, timeout = 60 * 1000) {
         sendMessagesWrapperImport(content, delNotification, msgChannel, o => deleteMessage(o), timeout)
     }
     if (msgCon === "!ping") {
@@ -147,34 +184,7 @@ function commandCenter(msgCon, msgChannel, guildMember, replyMessage, deleteMess
     } else if (msgCon === "!lord-time") {
         commandTimeCheck(replyQueryMessages)
     } else if (msgCon.startsWith("!lord-daily-combo")) {
-        const comboArray = msgCon.split(" ").slice(1)
-        if (comboArray.length === 0 || comboArray.length === 2) {
-            let week, weekday
-            if (comboArray.length === 0) {
-                let date = weekJudge()
-                week = date.week
-                weekday = date.weekday
-            } else {
-                let [week1, weekday1] = comboArray
-                week = week1
-                weekday = weekday1
-            }
-
-            dailyComboQuery(week, weekday).then(res => {
-                if (typeof res === "string") {
-                    replyQueryMessages(res)
-                } else {
-                    replyQueryMessages(res[0] + '\n' + res[1][0].join('\n'), false)
-                    for (let i = 1; i < res[1].length; i++) {
-                        sendMessages(res[1][i].join('\n'), i + 1 === res[1].length ? true : false)
-                    }
-                }
-            }, rej => {
-                replyQueryMessages(rej)
-            })
-        } else {
-            replyQueryMessages("daily combo support only 0 or 2 parameters.")
-        }
+        commandDailyComboCheck(msgCon, sendMessages, replyQueryMessages)
     } else if (msgCon.startsWith("!help")) {
         commandHelp(msgCon, sendMessages)
     }
