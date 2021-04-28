@@ -171,7 +171,7 @@ function commandCenter(msg) {
     commands = new Collection()
 
     for(let file of commandFiles) {
-        let commandInfo = require(`./commands/${file}`)
+        let commandInfo = require(`../commands/${file}`)
         commands.set(commandInfo.name, commandInfo)
         if(commandInfo.alias) {
             for(let alia of commandInfo.alias) {
