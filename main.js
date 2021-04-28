@@ -19,9 +19,7 @@ client.on("message", msg => {
     function adminPermission() {
         return adminPermissionImport(msg.member.roles.cache.values(), msg.member.guild.id)
     }
-    if (msg.content === "!ping") {
-        replyQueryMessages("pong")
-    } else if (msg.content.startsWith("!lord-video-add")) {
+    if (msg.content.startsWith("!lord-video-add")) {
         if (adminPermission()) {
             const videoArray = msg.content.split("[+++]").slice(1)
             videoArray[0] = /\w+/.exec(videoArray[0])[0]

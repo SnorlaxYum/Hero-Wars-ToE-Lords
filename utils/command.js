@@ -32,7 +32,9 @@ function commandHelp(msgCon, sendMessages) {
  * @param {(msg: MessageEmbed) => void} sendMessages function responsible for sending message
  */
 function commandCenter(msgCon, sendMessages) {
-    if (msgCon.startsWith("!help")) {
+    if (msgCon === "!ping") {
+        replyQueryMessages("pong")
+    } else if (msgCon.startsWith("!help")) {
         commandHelp(msgCon, sendMessages)
     }
 }
