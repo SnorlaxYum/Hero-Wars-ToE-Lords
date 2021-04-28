@@ -166,11 +166,11 @@ function commandCenter(msg) {
     }
     let commandFull = msg.content.slice(prefix.length).trim(), args = /^lord-video-add/.exec(commandFull) ? commandFull.split("[+++]") : commandFull.split(/ +/),
     command = args.shift().toLowerCase(),
-    commandFiles = fs.readdirSync("../commands").filter(file => file.endsWith(".js")),
+    commandFiles = fs.readdirSync("./commands").filter(file => file.endsWith(".js")),
     commands = new Collection()
 
     for(let file of commandFiles) {
-        let commandInfo = require(`../commands/${file}`)
+        let commandInfo = require(`./commands/${file}`)
         commands.set(commandInfo.name, commandInfo)
         if(commandInfo.alias) {
             for(let alia of commandInfo.alias) {

@@ -1,5 +1,5 @@
-const { addLordVideo, deleteLordVideos, comboParser, dailyComboQuery, getVideoShortcut, weekJudge } = require("../utils/common")
-const { replyQueryMessagesWrapperImport, sendMessagesWrapperImport, adminPermission } = require("../utils/discord")
+const { addLordVideo, deleteLordVideos, comboParser, dailyComboQuery, getVideoShortcut, weekJudge } = require("../common")
+const { replyQueryMessagesWrapperImport, sendMessagesWrapperImport, adminPermission } = require("../discord")
 
 module.exports = {
     name: "lord-time",
