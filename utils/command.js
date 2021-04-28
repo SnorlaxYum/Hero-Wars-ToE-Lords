@@ -56,11 +56,12 @@ function commandDailyComboCheck(msgCon, sendMessage, replyMessage) {
  */
 function commandHelp(msgCon, sendMessage) {
     let params = msgCon.split(' ').slice(1)
+    let descriptionParser = (command, index) => `${index + 1}. \`${command.prefix}\`\n${command.description}${command.alias ? "\nAlias: `" + command.alias + "`" : ""}`
     if (params.length === 0) {
         let newMsg = new MessageEmbed()
             .setTitle("Commands Help")
             .setDescription(
-                `${commands.map((command, index) => `${index + 1}. \`${command.prefix}\`\n${command.description}`).join('\n-----------------------------------------------------------------------------------------------\n')}`
+                `${commands.map(descriptionParser).join('\n-----------------------------------------------------------------------------------------------\n')}`
             )
         sendMessage(newMsg)
     } else {
@@ -68,7 +69,7 @@ function commandHelp(msgCon, sendMessage) {
             newMsg = new MessageEmbed()
                 .setTitle(`Commands Containing ${params.join(", ")}`)
                 .setDescription(
-                    `${results.map((command, index) => `${index + 1}. \`${command.prefix}\`\n${command.description}`).join('\n-----------------------------------------------------------------------------------------------\n')}`
+                    `${results.map(descriptionParser).join('\n-----------------------------------------------------------------------------------------------\n')}`
                 )
         sendMessage(newMsg)
     }
@@ -184,6 +185,8 @@ function commandCenter(msgCon, msgChannel, guildMember, replyMessage, deleteMess
     } else if (msgCon === "!lord-time") {
         commandTimeCheck(replyQueryMessages)
     } else if (msgCon.startsWith("!lord-daily-combo")) {
+        commandDailyComboCheck(msgCon, sendMessages, replyQueryMessages)
+    } else if (msgCon.startsWith("!lord-daily")) {
         commandDailyComboCheck(msgCon, sendMessages, replyQueryMessages)
     } else if (msgCon.startsWith("!help")) {
         commandHelp(msgCon, sendMessages)
