@@ -1,7 +1,7 @@
 const { Discord, client, replyQueryMessagesWrapperImport, sendMessagesWrapperImport, adminPermissionImport } = require("./utils/discord")
 const { logger } = require("./utils/log")
 const {addLordVideo, deleteLordVideos, comboParser, dailyComboQuery, getVideoShortcut, weekJudge} = require("./utils/common")
-const commands = require("./commands")
+const {commandCenter} = require("./utils/command")
 
 // ready
 client.on("ready", () => {
@@ -115,24 +115,6 @@ client.on("message", msg => {
         } else {
             replyQueryMessages("daily combo support only 0 or 2 parameters.")
         }
-    } else if (msg.content.startsWith("!help")) {
-        // this feature is gonna be realized in the database. and the related work will be moved to utils.
-        let params = msg.content.split(' ').slice(1)
-        if (params.length === 0) {
-            let newMsg = new Discord.MessageEmbed()
-                .setTitle("Commands Help")
-                .setDescription(
-                    `${commands.map((thing, index) => `${index + 1}. \`${thing.command}\`\n${thing.description}`).join('\n-----------------------------------------------------------------------------------------------\n')}`
-                )
-            sendMessages(newMsg)
-        } else {
-            let results = commands.filter(thing => params.map(param => thing.command.indexOf(param) >= 0).reduce((a, b) => a || b)),
-                newMsg = new Discord.MessageEmbed()
-                    .setTitle(`Commands Containing ${params.join(", ")}`)
-                    .setDescription(
-                        `${results.map((thing, index) => `${index + 1}. \`${thing.command}\`\n${thing.description}`).join('\n-----------------------------------------------------------------------------------------------\n')}`
-                    )
-            sendMessages(newMsg)
-        }
     }
+    commandCenter(msg.content, msg => {sendMessages(msg)})
 })
