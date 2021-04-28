@@ -166,7 +166,8 @@ function commandCenter(msg) {
     }
     let commandFull = msg.content.slice(prefix.length).trim(), args = /^lord-video-add/.exec(commandFull) ? commandFull.split("[+++]") : commandFull.split(/ +/),
     command = args.shift().toLowerCase(),
-    commandFiles = fs.readdirSync("./commands").filter(file => file.endsWith(".js")),
+    currentMainFilePath = process.mainModule.filename.split("/"),
+    commandFiles = fs.readdirSync([...currentMainFilePath.slice(0, currentMainFilePath.length-1), "commands"].join("/")).filter(file => file.endsWith(".js")),
     commands = new Collection()
 
     for(let file of commandFiles) {
