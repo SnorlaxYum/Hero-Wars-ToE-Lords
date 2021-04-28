@@ -38,6 +38,16 @@ function commandHelp(msgCon, sendMessages) {
 }
 
 /**
+ * check current lord time
+ * @param {(msg: StringResolvable|APIMessage) => void} replyMessage function responsible for replying the message
+ */
+function commandTimeCheck(replyMessage) {
+    const { week, weekday, time } = weekJudge(), padNum = num => String(num).padStart(2, "0")
+    let timeTotalSec = parseInt(time / 1000), second = timeTotalSec % 60, min = parseInt(timeTotalSec / 60) % 60, hour = parseInt(timeTotalSec / 60 / 60)
+    replyMessage(`Week ${week} - Day ${weekday} - ${padNum(hour)}:${padNum(min)}:${padNum(second)}`)
+}
+
+/**
  * add a lord video
  * @param {String} msgCon message content
  * @param {GuildMember} guildMember guild member info object
@@ -135,9 +145,7 @@ function commandCenter(msgCon, msgChannel, guildMember, replyMessage, deleteMess
     } else if (msgCon.startsWith("!lord-video-delete")) {
         commandVideoDelete(msgCon, guildMember, replyQueryMessages)
     } else if (msgCon === "!lord-time") {
-        const { week, weekday, time } = weekJudge(), padNum = num => String(num).padStart(2, "0")
-        let timeTotalSec = parseInt(time / 1000), second = timeTotalSec % 60, min = parseInt(timeTotalSec / 60) % 60, hour = parseInt(timeTotalSec / 60 / 60)
-        replyQueryMessages(`Week ${week} - Day ${weekday} - ${padNum(hour)}:${padNum(min)}:${padNum(second)}`)
+        commandTimeCheck(replyQueryMessages)
     } else if (msgCon.startsWith("!lord-daily-combo")) {
         const comboArray = msgCon.split(" ").slice(1)
         if (comboArray.length === 0 || comboArray.length === 2) {
