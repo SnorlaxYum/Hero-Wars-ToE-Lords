@@ -1,6 +1,6 @@
-const { client } = require("./utils/discordUtil")
+const { client } = require("./utils/discord")
 const { logger } = require("./utils/log")
-const { weekJudge, dailyComboQuery } = require("./utils/util")
+const { weekJudge, dailyComboQuery } = require("./utils/common")
 
 let ready = false
 
