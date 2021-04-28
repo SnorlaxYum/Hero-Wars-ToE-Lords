@@ -1,6 +1,7 @@
 const { Discord, client, replyQueryMessagesWrapperImport, sendMessagesWrapperImport, adminPermissionImport } = require("./utils/discord")
 const { logger } = require("./utils/log")
 const {addLordVideo, deleteLordVideos, comboParser, dailyComboQuery, getVideoShortcut, weekJudge} = require("./utils/common")
+const commands = require("./commands")
 
 // ready
 client.on("ready", () => {
@@ -116,23 +117,16 @@ client.on("message", msg => {
         }
     } else if (msg.content.startsWith("!help")) {
         // this feature is gonna be realized in the database. and the related work will be moved to utils.
-        let params = msg.content.split(' ').slice(1), things = [
-            { command: `!lord-time`, description: `Current time in Lord Format` },
-            { command: `!lord-daily-combo`, description: `Lord Combos now.` },
-            { command: `!lord-daily-combo <Week> <WeekDay>`, description: `Lord Combos in a specific lord day.` },
-            { command: `!lord-video-add[+++]<lord>[+++]<combo>[+++]<player>[+++]<attackingCombo>[+++]<point>[+++]<uri>`, description: `Add Lord Videos.` },
-            { command: `!lord-video-delete <uri>`, description: `Delete Lord Video.` },
-            { command: `!lord-video-delete <uri1> <uri2> ...`, description: `Delete Lord Videos.` },
-        ]
+        let params = msg.content.split(' ').slice(1)
         if (params.length === 0) {
             let newMsg = new Discord.MessageEmbed()
                 .setTitle("Commands Help")
                 .setDescription(
-                    `${things.map((thing, index) => `${index + 1}. \`${thing.command}\`\n${thing.description}`).join('\n-----------------------------------------------------------------------------------------------\n')}`
+                    `${commands.map((thing, index) => `${index + 1}. \`${thing.command}\`\n${thing.description}`).join('\n-----------------------------------------------------------------------------------------------\n')}`
                 )
             sendMessages(newMsg)
         } else {
-            let results = things.filter(thing => params.map(param => thing.command.indexOf(param) >= 0).reduce((a, b) => a || b)),
+            let results = commands.filter(thing => params.map(param => thing.command.indexOf(param) >= 0).reduce((a, b) => a || b)),
                 newMsg = new Discord.MessageEmbed()
                     .setTitle(`Commands Containing ${params.join(", ")}`)
                     .setDescription(
