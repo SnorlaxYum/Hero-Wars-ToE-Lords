@@ -56,7 +56,8 @@ function commandCenter(msg) {
                 timeoutDeleteMessage(msg, newMsg, false)
             }
         } else {
-            let results = helpCommands.filter(command => args.map(arg => (com => com.name.indexOf(arg) !== -1)).reduce((a, b) => typeof a === "function" ? (a(command) || b(command)) : (a || b(command)))),
+            let filterFuns = args.map(arg => com => com.name.indexOf(arg) !== -1)
+                results = helpCommands.filter(command => filterFuns.reduce((a, b) => typeof a === "function" ? (a(command) || b(command)) : (a || b(command)))),
                 newMsg = new MessageEmbed()
                     .setTitle(`Commands Containing ${args.join(", ")}`)
                     .setDescription(
