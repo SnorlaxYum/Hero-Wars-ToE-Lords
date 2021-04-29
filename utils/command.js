@@ -32,7 +32,7 @@ function commandCenter(msg) {
     if(command === "help") {
         let helpCommands = Array.from(commands.values()).filter(com => !com.isAlias)
         let descriptionParser = (command, index) => `${index + 1}. \`${prefix}${command.name}\`\n
-        Syntax: \`${command.syntax}\`
+        Syntax: \`${prefix}${command.syntax}\`
         Description: ${command.description}${command.alias ? "\nAlias: `" + command.alias.map(al => prefix+al).join(", ") + "`" : ""}`
         if (args.length === 0) {
             let newMsg = new MessageEmbed()
@@ -52,7 +52,7 @@ function commandCenter(msg) {
                 let newMsg = new MessageEmbed()
                 .setTitle(`Command ${command.name}`)
                 .setDescription(
-                    `Syntax: \`${command.syntax}\`
+                    `Syntax: \`${prefix}${command.syntax}\`
                     Description: ${command.description}${command.alias ? "\nAlias: `" + command.alias.join(", ") + "`" : ""}`
                 )
                 timeoutDeleteMessage(msg, newMsg, false)
