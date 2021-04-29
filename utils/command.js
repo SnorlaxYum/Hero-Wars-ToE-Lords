@@ -44,12 +44,12 @@ function commandCenter(msg) {
             if(command === -1) {
                 timeoutDeleteMessage(msg, "no command found")
             } else {
+                command = {...helpCommands[command]}
+                command.name = `${prefix}${command.name}`
                 let fields = [
                     { name: "Description", value: `${command.description}`},
                     { name: "Syntax", value: `\`${prefix}${command.syntax}\``},
                 ]
-                command = {...helpCommands[command]}
-                command.name = `${prefix}${command.name}`
                 if(command.alias) {
                     fields.push({
                         name: "Alias", 
