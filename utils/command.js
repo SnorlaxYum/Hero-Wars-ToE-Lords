@@ -41,6 +41,19 @@ function commandCenter(msg) {
                     `${helpCommands.map(descriptionParser).join('\n-----------------------------------------------------------------------------------------------\n')}`
                 )
             timeoutDeleteMessage(msg, newMsg, false)
+        } else if (args.length === 1) {
+            let command = helpCommands.findIndex(command => command.name === args[0])
+            if(command.length === 0) {
+                timeoutDeleteMessage(msg, "no command found")
+            } else {
+                let newMsg = new MessageEmbed()
+                .setTitle(`Command ${args[0]}`)
+                .setDescription(
+                    `Syntax: \`${command.syntax}\`
+                    Description: ${command.description}${command.alias ? "\nAlias: `" + command.alias.join(", ") + "`" : ""}`
+                )
+                timeoutDeleteMessage(msg, newMsg, false)
+            }
         } else {
             let results = helpCommands.filter(command => args.map(arg => (com => com.name.indexOf(arg) !== -1)).reduce((a, b) => typeof a === "function" ? (a(command) || b(command)) : (a || b(command)))),
                 newMsg = new MessageEmbed()
