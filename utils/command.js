@@ -41,22 +41,21 @@ function commandCenter(msg) {
             timeoutDeleteMessage(msg, newMsg, false)
         } else if (args.length === 1) {
             let command = helpCommands.findIndex(command => command.name === args[0] || (command.alias ? command.alias.indexOf(args[0]) !== -1 : false)),
-                fields = [
-                    { name: "Description", value: `${command.description}`},
-                    { name: "Syntax", value: `\`${prefix}${command.syntax}\``},
-                ]
-            if(command.alias) {
-                fields.push({
-                    name: "Alias", 
-                    value: command.alias.join(", ") + "`"
-                })
-            }
             if(command === -1) {
                 timeoutDeleteMessage(msg, "no command found")
             } else {
+                let fields = [
+                    { name: "Description", value: `${command.description}`},
+                    { name: "Syntax", value: `\`${prefix}${command.syntax}\``},
+                ]
                 command = {...helpCommands[command]}
                 command.name = `${prefix}${command.name}`
-                command.alias = command.alias.map(al => prefix+al)
+                if(command.alias) {
+                    fields.push({
+                        name: "Alias", 
+                        value: command.alias.map(al => prefix+al).join(", ") + "`"
+                    })
+                }
                 let newMsg = new MessageEmbed()
                 .setTitle(`Command ${command.name}`)
                 .addFields(...fields)
