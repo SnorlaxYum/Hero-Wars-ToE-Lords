@@ -53,7 +53,7 @@ function commandCenter(msg) {
                 if(command.alias) {
                     fields.push({
                         name: "Alias", 
-                        value: "`" + command.alias.map(al => prefix+al).join(", ") + "`"
+                        value: command.alias.map(al => `\`${prefix+al}\``).join(", ")
                     })
                 }
                 let newMsg = new MessageEmbed()
