@@ -1,5 +1,5 @@
-const { addLordVideo, deleteLordVideos, comboParser, dailyComboQuery, getVideoShortcut, weekJudge } = require("../utils/common")
-const { timeoutDeleteMessage, adminPermission } = require("../utils/discord")
+const { dailyComboQuery, weekJudge } = require("../utils/common")
+const { timeoutDeleteMessage } = require("../utils/discord")
 
 module.exports = {
     name: "lord-daily-combo",

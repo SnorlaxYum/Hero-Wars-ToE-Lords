@@ -1,8 +1,6 @@
-const commands = require("../commands.json")
 const { prefix } = require("../config.json")
-const { addLordVideo, deleteLordVideos, comboParser, dailyComboQuery, getVideoShortcut, weekJudge } = require("./common")
-const { timeoutDeleteMessage, adminPermission } = require("./discord")
-const { GuildMember, Message, MessageEmbed, TextChannel, StringResolvable, APIMessage, Collection } = require("./discord").Discord
+const { timeoutDeleteMessage } = require("./discord")
+const { MessageEmbed, Collection } = require("./discord").Discord
 const fs = require("fs")
 
 /**

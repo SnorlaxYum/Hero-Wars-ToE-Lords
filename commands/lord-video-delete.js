@@ -1,4 +1,4 @@
-const { addLordVideo, deleteLordVideos, comboParser, dailyComboQuery, getVideoShortcut, weekJudge } = require("../utils/common")
+const { deleteLordVideos, getVideoShortcut } = require("../utils/common")
 const { timeoutDeleteMessage, adminPermission } = require("../utils/discord")
 
 module.exports = {
@@ -22,10 +22,10 @@ module.exports = {
                     if (err) {
                         msg.reply(err.message)
                     } else {
-                        if(res.changes === 0) {
+                        if (res.changes === 0) {
                             console.error(`No video was deleted.`)
                             timeoutDeleteMessage(msg, `no video was deleted.`, true)
-                        } else if(res.changes === 1) {
+                        } else if (res.changes === 1) {
                             console.info(`Successfully deleted the video whose uri is ${args.join(' or ')}`)
                             timeoutDeleteMessage(msg, `successfully deleted the video whose uri is ${args.join(' or ')}`, true)
                         } else {
