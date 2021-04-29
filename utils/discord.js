@@ -20,7 +20,7 @@ try {
  * @param {Number} timeout after this number of ms the messages will be deleted if they're in a channel not intended for bots
  */
 function judgeTimeout(msg, timeout) {
-    if (msg.channel.name.startsWith('bot-command')) {
+    if (msg.channel.type === "dm" || msg.channel.name.startsWith('bot-command')) {
         return -1
     }
     return timeout
