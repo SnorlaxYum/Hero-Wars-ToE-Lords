@@ -43,9 +43,10 @@ function commandCenter(msg) {
             timeoutDeleteMessage(msg, newMsg, false)
         } else if (args.length === 1) {
             let command = helpCommands.findIndex(command => command.name === args[0])
-            if(command.length === 0) {
+            if(command === -1) {
                 timeoutDeleteMessage(msg, "no command found")
             } else {
+                command = commands[command]
                 let newMsg = new MessageEmbed()
                 .setTitle(`Command ${args[0]}`)
                 .setDescription(
