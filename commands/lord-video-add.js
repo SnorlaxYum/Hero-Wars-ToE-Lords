@@ -13,25 +13,25 @@ module.exports = {
      */
     exec(args, msg) {
         if (adminPermission(msg)) {
-            args[0] = /\w+/.exec(args[0])[0]
-            if (args[0] !== "All") {
-                try {
-                    args[1] = comboParser(args[1])
-                    args[3] = comboParser(args[3])
-                } catch (e) {
-                    return msg.reply(e.message)
-                }
-            }
-            args[4] = parseInt(args[4])
-
-            // video uri convert
-            let videoFinaluri = getVideoShortcut(args[5])
-            args[5] = videoFinaluri[0]
-            args.push(videoFinaluri[1])
-
-            if (args.length < 6) {
+            if(args.length === 0 || args.length < 6) {
                 timeoutDeleteMessage(msg, 'need 6 parameters (lord text, combo text, player text, attackingCombo text, point integer, uri text)', true)
             } else {
+                args[0] = /\w+/.exec(args[0])[0]
+                if (args[0] !== "All") {
+                    try {
+                        args[1] = comboParser(args[1])
+                        args[3] = comboParser(args[3])
+                    } catch (e) {
+                        return msg.reply(e.message)
+                    }
+                }
+                args[4] = parseInt(args[4])
+
+                // video uri convert
+                let videoFinaluri = getVideoShortcut(args[5])
+                args[5] = videoFinaluri[0]
+                args.push(videoFinaluri[1])
+
                 addLordVideo(args, err => {
                     if (err) {
                         console.error(err.message)
