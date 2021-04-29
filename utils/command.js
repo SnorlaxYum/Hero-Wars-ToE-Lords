@@ -32,9 +32,8 @@ function commandCenter(msg) {
     if(command === "help") {
         let helpCommands = Array.from(commands.values()).filter(com => !com.isAlias)
         let descriptionParser = (command, index) => `${index + 1}. \`${command.name}\`\n
-        Syntax: ${command.syntax}
-        Description: ${command.description}
-        ${command.alias ? "\nAlias: `" + command.alias.join(", ") + "`" : ""}`
+        Syntax: \`${command.syntax}\`
+        Description: ${command.description}${command.alias ? "\nAlias: `" + command.alias.join(", ") + "`" : ""}`
         if (args.length === 0) {
             let newMsg = new MessageEmbed()
                 .setTitle("Commands Help")
