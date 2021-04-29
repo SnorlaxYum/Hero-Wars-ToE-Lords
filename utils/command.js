@@ -29,10 +29,6 @@ function commandCenter(msg) {
         }
     }
 
-    if(!commands.has(command)) {
-        return
-    }
-
     if(command === "help") {
         let helpCommands = Array.from(commands.values()).filter(com => !com.isAlias)
         let descriptionParser = (command, index) => `${index + 1}. \`${command.name}\`\n
@@ -55,6 +51,8 @@ function commandCenter(msg) {
                     )
             timeoutDeleteMessage(msg, newMsg, false)
         }
+    } else if(!commands.has(command)) {
+        return
     } else {
         try {
             commands.get(command).exec(args, msg)
