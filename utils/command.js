@@ -42,7 +42,7 @@ function commandCenter(msg) {
                 )
             timeoutDeleteMessage(msg, newMsg, false)
         } else if (args.length === 1) {
-            let command = helpCommands.findIndex(command => command.name === args[0])
+            let command = helpCommands.findIndex(command => command.name === args[0] || command.alias.indexOf(args[0]) !== -1)
             if(command === -1) {
                 timeoutDeleteMessage(msg, "no command found")
             } else {
@@ -56,7 +56,7 @@ function commandCenter(msg) {
                 timeoutDeleteMessage(msg, newMsg, false)
             }
         } else {
-            let filterFuns = args.map(arg => com => com.name.indexOf(arg) !== -1)
+            let filterFuns = args.map(arg => com => (com.name.indexOf(arg) !== -1 || com.alias.findIndex(co => co.indexOf(arg)+1) !== -1))
                 results = helpCommands.filter(command => filterFuns.reduce((a, b) => typeof a === "function" ? (a(command) || b(command)) : (a || b(command)))),
                 newMsg = new MessageEmbed()
                     .setTitle(`Commands Containing ${args.join(", ")}`)
