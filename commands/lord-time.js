@@ -4,7 +4,7 @@ const { timeoutDeleteMessage } = require("../utils/discord")
 module.exports = {
     name: "lord-time",
     syntax: "lord-time",
-    alias: ["toe-time"],
+    alias: ["toe-time", "toe-clock", "lord-clock", "tc", "lc"],
     description: "Current time in Lord Format",
     /**
      * add a lord video

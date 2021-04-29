@@ -4,7 +4,7 @@ const { timeoutDeleteMessage } = require("../utils/discord")
 module.exports = {
     name: "lord-daily-combo",
     syntax: "lord-daily-combo <Week> <WeekDay>",
-    alias: ["lord-daily"],
+    alias: ["daily-lord", "lord-daily", "lord-combo", "lord-combo-daily", "lord-daily-video", "toe-lords", "toe-daily-lord", "toe-lord-daily", "toe-lord-combo", "ld"],
     description: "Lord combos in a specific lord day (or today if no arg is specified)",
     /**
      * check the daily lord combo according to the given date
