@@ -15,103 +15,64 @@ try {
 }
 
 /**
- * reply a query message (both query message and reply messages will be deleted if a timeout is specified)
- * @param {Object|String} content discord message
- * @param {Number} timeout after this number of ms the messages will be deleted
- * @param {Function} mreply reply callack
- * @param {Function} mdel delete callback
- */
-function replyQueryMessagesImport(content, timeout, mreply, mdel) {
-    mreply(content).then(reply => {
-        if (timeout > 0) {
-            reply.delete({ timeout })
-                .then(msg1 => console.info(`Deleted message from ${msg1.author.username}.`))
-                .catch(e => console.error(e))
-            mdel({ timeout })
-                .then(msg1 => console.info(`Deleted message from ${msg1.author.username}.`))
-                .catch(e => console.error(e))
-        }
-    })
-}
-
-/**
- * send a message after a query message is sent (both query message and reply messages will be deleted if a timeout is specified)
- * @param {Object|String} content discord message
- * @param {Number} timeout after this number of ms the messages will be deleted
- * @param {Object} channel message channel
- * @param {Function} mdel delete callback
- */
-function sendMessagesImport(content, timeout, channel, mdel) {
-    channel.send(content).then(msg2 => {
-        if (timeout > 0) {
-            msg2.delete({ timeout })
-                .then(msg1 => console.info(`Deleted message from ${msg1.author.username}.`))
-                .catch(e => console.error(e, 'error'))
-            mdel({ timeout })
-                .then(msg1 => console.info(`Deleted message from ${msg1.author.username}.`))
-                .catch(e => console.error(e))
-        }
-    })
-}
-
-/**
  * judge timeout number
+ * @param {Discord.Message} msg query message
  * @param {Number} timeout after this number of ms the messages will be deleted if they're in a channel not intended for bots
- * @param {Object} channel message channel
  */
-function judgeTimeoutImport(timeout, channel) {
-    if (channel.name.startsWith('bot-command')) {
+function judgeTimeout(msg, timeout) {
+    if (msg.channel.name.startsWith('bot-command')) {
         return -1
     }
     return timeout
 }
 
 /**
- * reply a query message (both query message and reply messages will be deleted if the obtained timeout is positive )
- * @param {Object|String} content discord message 
+ * judge timeout number and decide whether to delete the messages after the timeout
+ * @param {Discord.Message} msg query message
+ * @param {Object|String} content the content of the message to be sent
+ * @param {Boolean} isReply whether the message to be sent is a reply message or not
  * @param {Boolean} delNotification whether to show delete notification text
- * @param {Object} channel message channel
- * @param {Function} mreply reply callback
- * @param {Function} mdel delete callback
  * @param {Number} timeout after this number of ms the messages will be deleted if the obtained timeout is positive
  */
-function replyQueryMessagesWrapperImport(content, delNotification=true, channel, mreply, mdel, timeout = 60 * 1000) {
-    timeout = judgeTimeoutImport(timeout, channel)
+function timeoutDeleteMessage(msg, content, isReply=false, delNotification=true, timeout = 60 * 1000) {
+    timeout = judgeTimeout(msg, timeout)
     if (timeout >= 0 && delNotification) {
         if (typeof content === "string")
             content += `\n\n(Note these messages will be deleted in ${timeout}ms)`
         else
             content.description += `\n\n(Note these messages will be deleted in ${timeout}ms)`
     }
-    replyQueryMessagesImport(content, timeout, mreply, mdel)
-}
-
-/**
- * send a message after a query message is sent (both query message and reply messages will be deleted if the obtained timeout is positive)
- * @param {Object|String} content discord message 
- * @param {Boolean} delNotification whether to show delete notification text
- * @param {Object} channel message channel
- * @param {Function} mdel delete callback
- * @param {Number} timeout after this number of ms the messages will be deleted if the obtained timeout is positive
- */
-function sendMessagesWrapperImport(content, delNotification=true, channel, mdel, timeout = 60 * 1000) {
-    timeout = judgeTimeoutImport(timeout, channel)
-    if (timeout >= 0 && delNotification) {
-        if (typeof content === "string")
-            content += `\n\n(Note these messages will be deleted in ${timeout}ms)`
-        else
-            content.description += `\n\n(Note these messages will be deleted in ${timeout}ms)`
+    if(isReply) {
+        msg.reply(content).then(reply => {
+            if (timeout > 0) {
+                reply.delete({ timeout })
+                    .then(msg1 => console.info(`Deleted message from ${msg1.author.username}.`))
+                    .catch(e => console.error(e))
+                msg.delete({ timeout })
+                    .then(msg1 => console.info(`Deleted message from ${msg1.author.username}.`))
+                    .catch(e => console.error(e))
+            }
+        })
+    } else {
+        msg.channel.send(content).then(msg2 => {
+            if (timeout > 0) {
+                msg2.delete({ timeout })
+                    .then(msg1 => console.info(`Deleted message from ${msg1.author.username}.`))
+                    .catch(e => console.error(e, 'error'))
+                msg.delete({ timeout })
+                    .then(msg1 => console.info(`Deleted message from ${msg1.author.username}.`))
+                    .catch(e => console.error(e))
+            }
+        })
     }
-    sendMessagesImport(content, timeout, channel, mdel)
 }
 
 /**
  * see if the querying person has the permission to delete or add videos
- * @param {Object} member querying member
- * @param {String} guildId message guild's id
+ * @param {Discord.Message} msg query message
  */
-function adminPermissionImport(rolesValues, guildId) {
-    const rolesList = Array.from(rolesValues).map(i => i.name)
-    return adminRoles.filter(admin => rolesList.indexOf(admin.name) !== -1).filter(admin => admin.guildId === guildId).length > 0
+function adminPermission(msg) {
+    const rolesList = Array.from(msg.member.roles.cache.values()).map(i => i.name)
+    return adminRoles.filter(admin => rolesList.indexOf(admin.name) !== -1).filter(admin => admin.guildId === msg.member.guild.id).length > 0
 }
-module.exports = { Discord, client, replyQueryMessagesWrapperImport, sendMessagesWrapperImport, adminPermissionImport }
+module.exports = { Discord, client, timeoutDeleteMessage, adminPermission }
