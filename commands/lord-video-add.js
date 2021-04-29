@@ -4,7 +4,7 @@ const { timeoutDeleteMessage, adminPermission } = require("../utils/discord")
 module.exports = {
     name: "lord-video-add",
     syntax: "lord-video-add[+++]<lord>[+++]<combo>[+++]<player>[+++]<attackingCombo>[+++]<point>[+++]<uri>",
-    description: "Current time in Lord Format",
+    description: "Add a lord video",
     /**
      * add a lord video
      * @param {String} args command arguments

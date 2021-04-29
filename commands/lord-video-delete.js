@@ -4,7 +4,7 @@ const { timeoutDeleteMessage, adminPermission } = require("../utils/discord")
 module.exports = {
     name: "lord-video-delete",
     syntax: "lord-video-delete <uri>",
-    description: "Current time in Lord Format",
+    description: "Delete a lord video",
     /**
      * delete lord videos from the given uris
      * @param {String} args command arguments
