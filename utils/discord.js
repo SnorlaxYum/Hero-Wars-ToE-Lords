@@ -72,7 +72,13 @@ function timeoutDeleteMessage(msg, content, isReply=false, delNotification=true,
  * @param {Discord.Message} msg query message
  */
 function adminPermission(msg) {
-    const rolesList = Array.from(msg.member.roles.cache.values()).map(i => i.name)
-    return adminRoles.filter(admin => rolesList.indexOf(admin.name) !== -1).filter(admin => admin.guildId === msg.member.guild.id).length > 0
+    if(msg.channel.type === "dm") {
+        const {username, discriminator} = msg.channel.recipient
+        return adminRoles.findIndex(filter => filter.type === "dm" && filter.username === username && filter.discriminator === discriminator) !== -1
+    } else {
+        const rolesList = Array.from(msg.member.roles.cache.values()).map(i => i.name)
+        return adminRoles.filter(admin => admin.type === "guild" && rolesList.indexOf(admin.name) !== -1).filter(admin => admin.guildId === msg.member.guild.id).length > 0
+    }
+    
 }
 module.exports = { Discord, client, timeoutDeleteMessage, adminPermission }
