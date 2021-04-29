@@ -31,9 +31,9 @@ function commandCenter(msg) {
 
     if(command === "help") {
         let helpCommands = Array.from(commands.values()).filter(com => !com.isAlias)
-        let descriptionParser = (command, index) => `${index + 1}. \`${command.name}\`\n
+        let descriptionParser = (command, index) => `${index + 1}. \`${prefix}${command.name}\`\n
         Syntax: \`${command.syntax}\`
-        Description: ${command.description}${command.alias ? "\nAlias: `" + command.alias.join(", ") + "`" : ""}`
+        Description: ${command.description}${command.alias ? "\nAlias: `" + command.alias.map(al => prefix+al).join(", ") + "`" : ""}`
         if (args.length === 0) {
             let newMsg = new MessageEmbed()
                 .setTitle("Commands Help")
@@ -46,9 +46,11 @@ function commandCenter(msg) {
             if(command === -1) {
                 timeoutDeleteMessage(msg, "no command found")
             } else {
-                command = helpCommands[command]
+                command = {...helpCommands[command]}
+                command.name = `${prefix}${command.name}`
+                command.alias = command.alias.map(al => prefix+al)
                 let newMsg = new MessageEmbed()
-                .setTitle(`Command ${args[0]}`)
+                .setTitle(`Command ${command.name}`)
                 .setDescription(
                     `Syntax: \`${command.syntax}\`
                     Description: ${command.description}${command.alias ? "\nAlias: `" + command.alias.join(", ") + "`" : ""}`
