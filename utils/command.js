@@ -55,13 +55,13 @@ function commandCenter(msg) {
                     )
             timeoutDeleteMessage(msg, newMsg, false)
         }
-    }
-
-    try {
-        commands.get(command).exec(args, msg)
-    } catch(e) {
-        console.error(e.message)
-        msg.reply("an error occurred.")
+    } else {
+        try {
+            commands.get(command).exec(args, msg)
+        } catch(e) {
+            console.error(e.message)
+            msg.reply("an error occurred.")
+        }
     }
 }
 
