@@ -33,36 +33,36 @@ function commandCenter(msg) {
         return
     }
 
-    if(command === "help") {
-        let helpCommands = Array.from(commands.values()).filter(com => !com.isAlias)
-        let descriptionParser = (command, index) => `${index + 1}. \`${command.name}\`\n
-        Syntax: ${command.syntax}
-        Description: ${command.description}
-        ${command.alias ? "\nAlias: `" + command.alias.join(", ") + "`" : ""}`
-        if (args.length === 0) {
-            let newMsg = new MessageEmbed()
-                .setTitle("Commands Help")
-                .setDescription(
-                    `${helpCommands.map(descriptionParser).join('\n-----------------------------------------------------------------------------------------------\n')}`
-                )
-            timeoutDeleteMessage(msg, newMsg, false)
-        } else {
-            let results = helpCommands.filter(command => args.map(arg => (com => com.name.indexOf(arg) !== -1)).reduce((a, b) => typeof a === "function" ? (a(command) || b(command)) : (a || b(command)))),
-                newMsg = new MessageEmbed()
-                    .setTitle(`Commands Containing ${args.join(", ")}`)
-                    .setDescription(
-                        `${results.map(descriptionParser).join('\n-----------------------------------------------------------------------------------------------\n')}`
-                    )
-            timeoutDeleteMessage(msg, newMsg, false)
-        }
-    } else {
+    // if(command === "help") {
+    //     let helpCommands = Array.from(commands.values()).filter(com => !com.isAlias)
+    //     let descriptionParser = (command, index) => `${index + 1}. \`${command.name}\`\n
+    //     Syntax: ${command.syntax}
+    //     Description: ${command.description}
+    //     ${command.alias ? "\nAlias: `" + command.alias.join(", ") + "`" : ""}`
+    //     if (args.length === 0) {
+    //         let newMsg = new MessageEmbed()
+    //             .setTitle("Commands Help")
+    //             .setDescription(
+    //                 `${helpCommands.map(descriptionParser).join('\n-----------------------------------------------------------------------------------------------\n')}`
+    //             )
+    //         timeoutDeleteMessage(msg, newMsg, false)
+    //     } else {
+    //         let results = helpCommands.filter(command => args.map(arg => (com => com.name.indexOf(arg) !== -1)).reduce((a, b) => typeof a === "function" ? (a(command) || b(command)) : (a || b(command)))),
+    //             newMsg = new MessageEmbed()
+    //                 .setTitle(`Commands Containing ${args.join(", ")}`)
+    //                 .setDescription(
+    //                     `${results.map(descriptionParser).join('\n-----------------------------------------------------------------------------------------------\n')}`
+    //                 )
+    //         timeoutDeleteMessage(msg, newMsg, false)
+    //     }
+    // } else {
         try {
             commands.get(command).exec(args, msg)
         } catch(e) {
             console.error(e.message)
             msg.reply("an error occurred.")
         }
-    }
+    // }
 }
 
 module.exports = { commandCenter }
