@@ -15,49 +15,11 @@ try {
 }
 
 /**
- * reply a query message (both query message and reply messages will be deleted if a timeout is specified)
- * @param {Object|String} content sending content
- * @param {Discord.Message} msg query message
- * @param {Number} timeout after this number of ms the messages will be deleted
- */
-function replyQueryMessagesImport(content, msg, timeout) {
-    msg.reply(content).then(reply => {
-        if (timeout > 0) {
-            reply.delete({ timeout })
-                .then(msg1 => console.info(`Deleted message from ${msg1.author.username}.`))
-                .catch(e => console.error(e))
-            msg.delete({ timeout })
-                .then(msg1 => console.info(`Deleted message from ${msg1.author.username}.`))
-                .catch(e => console.error(e))
-        }
-    })
-}
-
-/**
- * send a message after a query message is sent (both query message and reply messages will be deleted if a timeout is specified)
- * @param {Object|String} content discord message
- * @param {Discord.Message} msg query message
- * @param {Number} timeout after this number of ms the messages will be deleted
- */
-function sendMessagesImport(content, msg, timeout) {
-    msg.channel.send(content).then(msg2 => {
-        if (timeout > 0) {
-            msg2.delete({ timeout })
-                .then(msg1 => console.info(`Deleted message from ${msg1.author.username}.`))
-                .catch(e => console.error(e, 'error'))
-            msg.delete({ timeout })
-                .then(msg1 => console.info(`Deleted message from ${msg1.author.username}.`))
-                .catch(e => console.error(e))
-        }
-    })
-}
-
-/**
  * judge timeout number
  * @param {Discord.Message} msg query message
  * @param {Number} timeout after this number of ms the messages will be deleted if they're in a channel not intended for bots
  */
-function judgeTimeoutImport(msg, timeout) {
+function judgeTimeout(msg, timeout) {
     if (msg.channel.name.startsWith('bot-command')) {
         return -1
     }
@@ -65,39 +27,44 @@ function judgeTimeoutImport(msg, timeout) {
 }
 
 /**
- * reply a query message (both query message and reply messages will be deleted if the obtained timeout is positive )
- * @param {Object|String} content sending content 
+ * judge timeout number and decide whether to delete the messages after the timeout
  * @param {Discord.Message} msg query message
+ * @param {Object|String} content the content of the message to be sent
+ * @param {Boolean} isReply whether the message to be sent is a reply message or not
  * @param {Boolean} delNotification whether to show delete notification text
  * @param {Number} timeout after this number of ms the messages will be deleted if the obtained timeout is positive
  */
-function replyQueryMessagesWrapperImport(content, msg, delNotification=true, timeout = 60 * 1000) {
-    timeout = judgeTimeoutImport(timeout, msg.channel)
+function timeoutDeleteMessage(msg, content, isReply=false, delNotification=true, timeout = 60 * 1000) {
+    timeout = judgeTimeout(msg, timeout)
     if (timeout >= 0 && delNotification) {
         if (typeof content === "string")
             content += `\n\n(Note these messages will be deleted in ${timeout}ms)`
         else
             content.description += `\n\n(Note these messages will be deleted in ${timeout}ms)`
     }
-    replyQueryMessagesImport(content, msg, timeout)
-}
-
-/**
- * send a message after a query message is sent (both query message and reply messages will be deleted if the obtained timeout is positive)
- * @param {Object|String} content discord message 
- * @param {Discord.Message} msg query message
- * @param {Boolean} delNotification whether to show delete notification text
- * @param {Number} timeout after this number of ms the messages will be deleted if the obtained timeout is positive
- */
-function sendMessagesWrapperImport(content, msg, delNotification=true, timeout = 60 * 1000) {
-    timeout = judgeTimeoutImport(msg, timeout)
-    if (timeout >= 0 && delNotification) {
-        if (typeof content === "string")
-            content += `\n\n(Note these messages will be deleted in ${timeout}ms)`
-        else
-            content.description += `\n\n(Note these messages will be deleted in ${timeout}ms)`
+    if(isReply) {
+        msg.reply(content).then(reply => {
+            if (timeout > 0) {
+                reply.delete({ timeout })
+                    .then(msg1 => console.info(`Deleted message from ${msg1.author.username}.`))
+                    .catch(e => console.error(e))
+                msg.delete({ timeout })
+                    .then(msg1 => console.info(`Deleted message from ${msg1.author.username}.`))
+                    .catch(e => console.error(e))
+            }
+        })
+    } else {
+        msg.channel.send(content).then(msg2 => {
+            if (timeout > 0) {
+                msg2.delete({ timeout })
+                    .then(msg1 => console.info(`Deleted message from ${msg1.author.username}.`))
+                    .catch(e => console.error(e, 'error'))
+                msg.delete({ timeout })
+                    .then(msg1 => console.info(`Deleted message from ${msg1.author.username}.`))
+                    .catch(e => console.error(e))
+            }
+        })
     }
-    sendMessagesImport(content, msg, timeout)
 }
 
 /**
@@ -108,4 +75,4 @@ function adminPermission(msg) {
     const rolesList = Array.from(msg.member.roles.cache.values()).map(i => i.name)
     return adminRoles.filter(admin => rolesList.indexOf(admin.name) !== -1).filter(admin => admin.guildId === msg.member.guild.id).length > 0
 }
-module.exports = { Discord, client, replyQueryMessagesWrapperImport, sendMessagesWrapperImport, adminPermission }
+module.exports = { Discord, client, timeoutDeleteMessage, adminPermission }

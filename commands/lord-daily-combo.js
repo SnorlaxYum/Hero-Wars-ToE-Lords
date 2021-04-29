@@ -1,5 +1,5 @@
 const { addLordVideo, deleteLordVideos, comboParser, dailyComboQuery, getVideoShortcut, weekJudge } = require("../utils/common")
-const { replyQueryMessagesWrapperImport, sendMessagesWrapperImport, adminPermission } = require("../utils/discord")
+const { timeoutDeleteMessage, adminPermission } = require("../utils/discord")
 
 module.exports = {
     name: "lord-daily-combo",
@@ -26,18 +26,18 @@ module.exports = {
     
             dailyComboQuery(week, weekday).then(res => {
                 if (typeof res === "string") {
-                    msg.reply(res)
+                    timeoutDeleteMessage(msg, res, true)
                 } else {
-                    msg.reply(res[0] + '\n' + res[1][0].join('\n'), false)
+                    timeoutDeleteMessage(msg, res[0] + '\n' + res[1][0].join('\n'), true, false)
                     for (let i = 1; i < res[1].length; i++) {
-                        msg.channel.send(res[1][i].join('\n'), i + 1 === res[1].length ? true : false)
+                        timeoutDeleteMessage(msg, res[1][i].join('\n'), false, i+1 === res[1].length ? true : false)
                     }
                 }
             }, rej => {
-                msg.reply(rej)
+                timeoutDeleteMessage(msg, rej, true)
             })
         } else {
-            msg.reply("daily combo support only 0 or 2 parameters.")
+            timeoutDeleteMessage(msg, "daily combo support only 0 or 2 parameters.", true)
         }
     }
 }

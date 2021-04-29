@@ -1,5 +1,5 @@
 const { addLordVideo, deleteLordVideos, comboParser, dailyComboQuery, getVideoShortcut, weekJudge } = require("../utils/common")
-const { replyQueryMessagesWrapperImport, sendMessagesWrapperImport, adminPermission } = require("../utils/discord")
+const { timeoutDeleteMessage, adminPermission } = require("../utils/discord")
 
 module.exports = {
     name: "lord-video-delete",
@@ -24,19 +24,19 @@ module.exports = {
                     } else {
                         if(res.changes === 0) {
                             console.error(`No video was deleted.`)
-                            msg.reply(`no video was deleted.`)
+                            timeoutDeleteMessage(msg, `no video was deleted.`, true)
                         } else if(res.changes === 1) {
                             console.info(`Successfully deleted the video whose uri is ${args.join(' or ')}`)
-                            msg.reply(`successfully deleted the video whose uri is ${args.join(' or ')}`)
+                            timeoutDeleteMessage(msg, `successfully deleted the video whose uri is ${args.join(' or ')}`, true)
                         } else {
                             console.info(`Successfully deleted ${res.changes} videos whose uri are ${args.join(' or ')}`)
-                            msg.reply(`successfully deleted ${res.changes} videos whose uri are ${args.join(' or ')}`)
+                            timeoutDeleteMessage(msg, `successfully deleted ${res.changes} videos whose uri are ${args.join(' or ')}`, true)
                         }
                     }
                 })
             }
         } else {
-            msg.reply("sorry, you have no permissions to complete this action.")
+            timeoutDeleteMessage(msg, "sorry, you have no permissions to complete this action.", true)
         }
     }
 }

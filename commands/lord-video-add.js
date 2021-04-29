@@ -1,5 +1,5 @@
 const { addLordVideo, deleteLordVideos, comboParser, dailyComboQuery, getVideoShortcut, weekJudge } = require("../utils/common")
-const { replyQueryMessagesWrapperImport, sendMessagesWrapperImport, adminPermission } = require("../utils/discord")
+const { timeoutDeleteMessage, adminPermission } = require("../utils/discord")
 
 module.exports = {
     name: "lord-video-add",
@@ -29,24 +29,24 @@ module.exports = {
             args.push(videoFinaluri[1])
 
             if (args.length < 6) {
-                msg.reply('need 6 parameters (lord text, combo text, player text, attackingCombo text, point integer, uri text)')
+                timeoutDeleteMessage(msg, 'need 6 parameters (lord text, combo text, player text, attackingCombo text, point integer, uri text)', true)
             } else {
                 addLordVideo(args, err => {
                     if (err) {
                         console.error(err.message)
                         if (err.message.indexOf("UNIQUE constraint failed") !== -1) {
-                            msg.reply("the video is already in the database.")
+                            timeoutDeleteMessage(msg, "the video is already in the database.", true)
                         } else {
-                            msg.reply("an internal error happened.")
+                            timeoutDeleteMessage(msg, "an internal error happened.", true)
                         }
                     } else {
                         console.info(`A row has been inserted into video with uri ${args[5]}`)
-                        msg.reply(`successfully added the video for ${args[1]} from ${args[2]}`)
+                        timeoutDeleteMessage(msg, `successfully added the video for ${args[1]} from ${args[2]}`, true)
                     }
                 })
             }
         } else {
-            msg.reply("sorry, you have no permissions to complete this action.")
+            timeoutDeleteMessage(msg, "sorry, you have no permissions to complete this action.", true)
         }
     }
 }
