@@ -11,7 +11,7 @@ module.exports = {
      * @param {Discord.Message} msg query message
      */
     exec(args, msg) {
-        if (adminPermission(msg.member)) {
+        if (adminPermission(msg)) {
             if (args.length === 0) {
                 msg.reply('this API needs at least one uri to complete')
             } else {

@@ -11,7 +11,7 @@ module.exports = {
      * @param {Discord.Message} msg query message
      */
     exec(args, msg) {
-        if (adminPermission(msg.member)) {
+        if (adminPermission(msg)) {
             args[0] = /\w+/.exec(args[0])[0]
             if (args[0] !== "All") {
                 try {
