@@ -180,7 +180,7 @@ function lordVideoWithGivenCombo(combo) {
     return new Promise((resolve) => {
         let comboFinal
         try {
-            comboFinal = combo.map(com => combocomboParser(com))
+            comboFinal = combo.map(com => comboParser(com))
         } catch(e) {
             throw e
         }
@@ -194,9 +194,7 @@ function lordVideoWithGivenCombo(combo) {
                     res(rows2)
                 })
             }).then(videos => {
-                if(typeof videos !== "object") {
-                    resolve(videos)
-                } else if(videos.length > 0) {
+                if(videos.length > 0) {
                     videos = videos.map(video => {
                         let {uri, uriParam} = video
                         return {
