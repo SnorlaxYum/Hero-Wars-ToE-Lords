@@ -12,7 +12,7 @@ module.exports = {
      * @param {Discord.Message} msg query message
      */
     exec(args, msg) {
-        if (args.length === 1) {
+        if (args.length > 0) {
             try {
                 lordVideoWithGivenCombo(args).then(res => {
                     if (typeof res === "string") {
