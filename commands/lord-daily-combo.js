@@ -3,8 +3,8 @@ const { timeoutDeleteMessage } = require("../utils/discord")
 
 module.exports = {
     name: "lord-daily-combo",
-    syntax: "lord-daily-combo <Week> <WeekDay>",
-    example: "ld A 1",
+    syntax: "lord-daily-combo <timeString>",
+    example: "ld 2021-04-05T13:00:00+0800",
     alias: ["daily-lord", "lord-daily", "lord-combo", "lord-combo-daily", "lord-daily-video", "toe-lords", "toe-daily-lord", "toe-lord-daily", "toe-lord-combo", "ld"],
     description: "Lord combos in a specific lord day (or today if no arg is specified)",
     /**
@@ -14,15 +14,19 @@ module.exports = {
      */
     exec(args, msg) {
         if (args.length === 0 || args.length === 2) {
-            let week, weekday
+            let week, weekday, date
             if (args.length === 0) {
-                let date = weekJudge()
+                date = weekJudge()
                 week = date.week
                 weekday = date.weekday
             } else {
-                let [week1, weekday1] = args
-                week = week1
-                weekday = weekday1
+                try {
+                    date = weekJudge(args[0])
+                } catch(e) {
+                    throw e
+                }
+                week = date.week
+                weekday = date.weekday
             }
             
             try {
