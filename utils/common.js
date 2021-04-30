@@ -177,12 +177,12 @@ function dailyComboQuery(week, weekday) {
  * @param {String[]} combo the given lord combos
  */
 function lordVideoWithGivenCombo(combo) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         let comboFinal
         try {
             comboFinal = combo.map(com => comboParser(com))
         } catch(e) {
-            throw e
+            reject(e.message)
         }
         let lines = [`**Search Results:**`]
         try {
