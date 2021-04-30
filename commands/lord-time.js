@@ -4,6 +4,7 @@ const { timeoutDeleteMessage } = require("../utils/discord")
 module.exports = {
     name: "lord-time",
     syntax: "lord-time <timeString>",
+    example: "lc 2021-04-05T13:00:00+0800",
     alias: ["toe-time", "toe-clock", "lord-clock", "tc", "lc"],
     description: "given time (current time if no argument is given to the command) in Lord Time Format.",
     /**

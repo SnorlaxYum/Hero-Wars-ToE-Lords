@@ -5,6 +5,7 @@ module.exports = {
     name: "lord-video-delete",
     syntax: "lord-video-delete <uri>",
     alias: ["lordv-", "lv-"],
+    example: "lv- https://youtu.be/m2z0d6JI9L0?t=5",
     description: "Delete a lord video",
     /**
      * delete lord videos from the given uris

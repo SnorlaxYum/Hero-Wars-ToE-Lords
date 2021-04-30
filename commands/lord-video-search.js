@@ -5,6 +5,7 @@ module.exports = {
     name: "lord-video-search",
     syntax: "lord-video-search[+++]<combo>[+++]<combo2>[+++]......",
     alias: ["lvs"],
+    example: "lvs[+++]an, sy, 3 su[+++]3 su,si,no",
     description: "Lord videos where the given combos appear. (also support a single combo)",
     /**
      * return the lord videos where the given combo appears
