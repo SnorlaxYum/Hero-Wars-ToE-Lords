@@ -3,9 +3,9 @@ const { timeoutDeleteMessage } = require("../utils/discord")
 
 module.exports = {
     name: "lord-video-search",
-    syntax: "lord-video-search[+++]<combo>",
+    syntax: "lord-video-search[+++]<combo>[+++]<combo2>[+++]......",
     alias: ["lvs"],
-    description: "Lord videos where the given combo appears.",
+    description: "Lord videos where the given combos appear. (also support a single combo)",
     /**
      * return the lord videos where the given combo appears
      * @param {String} args command arguments
