@@ -104,7 +104,7 @@ function comboParser(combo) {
 }
 
 /**
- * Query the daily lord combos
+ * Get the daily lord combos according to the given lord week and weekday
  * @param {String} week week
  * @param {Number} weekday day in a week, starting from 1
  */
@@ -169,6 +169,75 @@ function dailyComboQuery(week, weekday) {
                 }
             })
         }
+    })
+}
+
+/**
+ * Get the lord videos the given lord combo
+ * @param {String} combo the given lord combo
+ */
+function lordVideoWithGivenCombo(combo) {
+    return new Promise((resolve, reject) => {
+        let comboFinal
+        try {
+            comboFinal = comboParser(combo)
+        } catch(e) {
+            throw e
+        }
+        db.get(`SELECT lord, combo, week, weekday FROM combo WHERE combo=?;`, [comboFinal], (err, row) => {
+            if (err) {
+                reject(`Error: ${err}`)
+            }
+            if (row) {
+                let lines = [`**${row.lord} Lord (${row.combo}) on Week ${rowsweek}, Day ${weekday}:**`]
+                new Promise(res => {
+                    db.all(`SELECT lord, combo, player, attackingCombo, point, uri, uriParam FROM video WHERE instr(combo, ?) ORDER BY lord DESC;`, [row.combo], (err2, rows2) => {
+                        if (err2) {
+                            res(`Error: ${err2}`)
+                        }
+                        res(rows2)
+                    })
+                }).then(videos => {
+                    if(typeof videos !== "object") {
+                        resolve(videos)
+                    } else if(videos.length > 0) {
+                        videos = videos.map(video => {
+                            let {uri, uriParam} = video
+                            return {
+                                ...video,
+                                uri: getVideourl(uri, uriParam)
+                            }
+                        })
+                        lines.push('', 'Maxed versions:')
+                        if (videos.length <= 5) {
+                            videos.forEach(video => {
+                                if (video.lord === "All") {
+                                    lines.push(`**${video.lord} Lords** video from ${video.player} (Attacking Team: **${video.attackingCombo}**): ${video.uri}`)
+                                } else {
+                                    lines.push(`**${video.lord} Lord (${video.combo})** video from ${video.player} (Attacking Team: **${video.attackingCombo}, ${video.point} points**): ${video.uri}`)
+                                }
+                            })
+                        } else {
+                            let videoGroups = []
+                            // 5 is the maximum embed number allowed in a single message
+                            for (let i = 0; i < videos.length; i += 5) {
+                                videoGroups.push(videos.slice(i, i + 5)
+                                    .map(video => video.lord === "All" ?
+                                        `**${video.lord} Lords** video from ${video.player} (Attacking Team: **${video.attackingCombo}**): ${video.uri}`
+                                        :
+                                        `**${video.lord} Lord (${video.combo})** video from ${video.player} (Attacking Team: **${video.attackingCombo}, ${video.point} points**): ${video.uri}`
+                                    )
+                                )
+                            }
+                            resolve([lines.join('\n'), videoGroups])
+                        }
+                    }
+                    resolve(lines.length === 1 ? [...lines, "no videos found"].joins("\n") : lines.join('\n'))
+                })
+            } else {
+                resolve('no lord with the given combo was found.')
+            }
+        })
     })
 }
 
@@ -249,4 +318,4 @@ function getVideourl(uri, uriParam) {
     }
 }
 
-module.exports = {addLordVideo, comboParser, dailyComboQuery, deleteLordVideos, gdrivevideoToShortcut, youtubeToShortcut, shortcutToYoutube, shortcutTogdrivevideo, getVideourl, getVideoShortcut, weekJudge}
+module.exports = {addLordVideo, comboParser, dailyComboQuery, deleteLordVideos, gdrivevideoToShortcut, lordVideoWithGivenCombo, youtubeToShortcut, shortcutToYoutube, shortcutTogdrivevideo, getVideourl, getVideoShortcut, weekJudge}
