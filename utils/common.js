@@ -184,12 +184,12 @@ function lordVideoWithGivenCombo(combo) {
         } catch(e) {
             throw e
         }
-        db.get(`SELECT lord, combo, week, weekday FROM combo WHERE combo=?;`, [comboFinal], (err, row) => {
+        db.get(`SELECT lord, combo, week, day FROM combo WHERE combo=?;`, [comboFinal], (err, row) => {
             if (err) {
                 reject(`Error: ${err}`)
             }
             if (row) {
-                let lines = [`**${row.lord} Lord (${row.combo}) on Week ${rowsweek}, Day ${weekday}:**`]
+                let lines = [`**${row.lord} Lord (${row.combo}) on Week ${row.week}, Day ${row.day}:**`]
                 new Promise(res => {
                     db.all(`SELECT lord, combo, player, attackingCombo, point, uri, uriParam FROM video WHERE instr(combo, ?) ORDER BY lord DESC;`, [row.combo], (err2, rows2) => {
                         if (err2) {
