@@ -23,19 +23,23 @@ module.exports = {
                 week = week1
                 weekday = weekday1
             }
-    
-            dailyComboQuery(week, weekday).then(res => {
-                if (typeof res === "string") {
-                    timeoutDeleteMessage(msg, res, true)
-                } else {
-                    timeoutDeleteMessage(msg, res[0] + '\n' + res[1][0].join('\n'), true, false)
-                    for (let i = 1; i < res[1].length; i++) {
-                        timeoutDeleteMessage(msg, res[1][i].join('\n'), false, i+1 === res[1].length ? true : false)
+            
+            try {
+                dailyComboQuery(week, weekday).then(res => {
+                    if (typeof res === "string") {
+                        timeoutDeleteMessage(msg, res, true)
+                    } else {
+                        timeoutDeleteMessage(msg, res[0] + '\n' + res[1][0].join('\n'), true, false)
+                        for (let i = 1; i < res[1].length; i++) {
+                            timeoutDeleteMessage(msg, res[1][i].join('\n'), false, i+1 === res[1].length ? true : false)
+                        }
                     }
-                }
-            }, rej => {
-                timeoutDeleteMessage(msg, rej, true)
-            })
+                }, rej => {
+                    timeoutDeleteMessage(msg, rej, true)
+                })
+            } catch(e) {
+                throw e
+            }
         } else {
             timeoutDeleteMessage(msg, "daily combo support only 0 or 2 parameters.", true)
         }
