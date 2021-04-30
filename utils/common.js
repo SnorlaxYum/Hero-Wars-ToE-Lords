@@ -208,7 +208,6 @@ function lordVideoWithGivenCombo(combo) {
                                 uri: getVideourl(uri, uriParam)
                             }
                         })
-                        lines.push('', 'Maxed versions:')
                         if (videos.length <= 5) {
                             videos.forEach(video => {
                                 if (video.lord === "All") {
