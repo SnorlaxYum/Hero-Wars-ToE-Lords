@@ -115,22 +115,18 @@ function dailyComboQuery(week, weekday) {
         } else {
             db.all(`SELECT lord, combo FROM combo WHERE week=? AND day=?;`, [week, weekday], (err, rows) => {
                 if (err) {
-                    reject(`Error: ${err}`)
+                    throw new Error(err)
                 }
                 if (rows.length) {
                     let combos = [`**Week ${week}, Day ${weekday}:**`]
                     combos.push(...rows.map(row => `${row.lord} Lord: ${row.combo}`))
                     new Promise(res => {
-                        db.all(`SELECT lord, combo, player, attackingCombo, point, uri, uriParam FROM video WHERE ${[...rows.map(() => "combo=?"), "lord=?"].join(" OR ")} ORDER BY lord DESC;`, [...rows.map(row => row.combo), "All"], (err2, rows2) => {
-                            if (err2) {
-                                res(`Error: ${err2}`)
-                            }
-                            res(rows2.filter(row => rows.map(ro => ro.lord).indexOf(row.lord) !== -1 || (row.lord === "All" && row.combo.indexOf(rows[0].combo) !== -1)))
+                        db.all(`SELECT lord, combo, player, attackingCombo, point, uri, uriParam FROM video WHERE ${[...rows.map(() => "instr(combo, ?)")].join(" OR ")} ORDER BY lord DESC;`, rows.map(row => row.combo), (err2, rows2) => {
+                            if(err2) throw new Error(err2)
+                            res(rows2)
                         })
                     }).then(videos => {
-                        if(typeof videos !== "object") {
-                            resolve(videos)
-                        } else if(videos.length > 0) {
+                        if(videos.length > 0) {
                             videos = videos.map(video => {
                                 let {uri, uriParam} = video
                                 return {
