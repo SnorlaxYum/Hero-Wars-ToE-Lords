@@ -116,7 +116,7 @@ function comboParser(combo) {
 function dailyComboQuery(week, weekday) {
     return new Promise((resolve, reject) => {
         if (weekday > 5) {
-            resolve('ToE already ended......')
+            resolve('no ToE going on during the specific time......')
         } else {
             db.all(`SELECT lord, combo FROM combo WHERE week=? AND day=?;`, [week, weekday], (err, rows) => {
                 if (err) {
