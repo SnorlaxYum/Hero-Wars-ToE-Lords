@@ -78,7 +78,7 @@ function commandCenter(msg) {
             commands.get(command).exec(args, msg)
         } catch(e) {
             console.error(e.message)
-            msg.reply("an error occurred.")
+            msg.reply("an internal error occurred.")
         }
     }
 }
