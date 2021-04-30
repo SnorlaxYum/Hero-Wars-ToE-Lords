@@ -2,9 +2,9 @@ const { lordVideoWithGivenCombo } = require("../utils/common")
 const { timeoutDeleteMessage } = require("../utils/discord")
 
 module.exports = {
-    name: "lord-daily-combo-search",
-    syntax: "lord-daily-combo-search <combo>",
-    alias: ["daily-lord-search", "lord-daily-search", "lord-combo-search", "lord-combo-daily-search", "lord-daily-video-search", "toe-daily-lord-search", "toe-lord-daily-search", "toe-lord-combo-search", "lcs"],
+    name: "lord-video-search",
+    syntax: "lord-video-search[+++]<combo>",
+    alias: ["lvs"],
     description: "Lord videos where the given combo appears.",
     /**
      * return the lord videos where the given combo appears

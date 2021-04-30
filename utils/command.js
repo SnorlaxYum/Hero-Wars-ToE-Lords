@@ -11,7 +11,7 @@ function commandCenter(msg) {
     if(!msg.content.startsWith(prefix)) {
         return
     }
-    let commandFull = msg.content.slice(prefix.length).trim(), args = /^lord-video-add/.exec(commandFull) || /^lv\+/.exec(commandFull) ? commandFull.split("[+++]") : commandFull.split(/ +/),
+    let commandFull = msg.content.slice(prefix.length).trim(), args = /^lord-video-add/.exec(commandFull) || /^lv\+/.exec(commandFull) || /^lordv\+/.exec(commandFull) || /^lord-video-search/.exec(commandFull) || /^lvs/.exec(commandFull)  ? commandFull.split("[+++]") : commandFull.split(/ +/),
     command = args.shift().toLowerCase(),
     currentMainFilePath = process.mainModule.filename.split("/"),
     commandFiles = fs.readdirSync([...currentMainFilePath.slice(0, currentMainFilePath.length-1), "commands"].join("/")).filter(file => file.endsWith(".js")),
