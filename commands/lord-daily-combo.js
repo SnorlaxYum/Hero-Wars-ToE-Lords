@@ -13,7 +13,7 @@ module.exports = {
      * @param {Discord.Message} msg query message
      */
     exec(args, msg) {
-        if (args.length === 0 || args.length === 1) {
+        if (args.length <= 1) {
             let week, weekday, date
             if (args.length === 0) {
                 date = weekJudge()
