@@ -4,7 +4,7 @@ const { timeoutDeleteMessage } = require("../utils/discord")
 module.exports = {
     name: "lord-daily-combo-search",
     syntax: "lord-daily-combo-search <combo>",
-    alias: ["daily-lord", "lord-daily", "lord-combo", "lord-combo-daily", "lord-daily-video", "toe-lords", "toe-daily-lord", "toe-lord-daily", "toe-lord-combo", "ld"],
+    alias: ["daily-lord-search", "lord-daily-search", "lord-combo-search", "lord-combo-daily-search", "lord-daily-video-search", "toe-daily-lord-search", "toe-lord-daily-search", "toe-lord-combo-search", "lcs"],
     description: "Lord videos where the given combo appears.",
     /**
      * return the lord videos where the given combo appears
