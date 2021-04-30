@@ -42,9 +42,10 @@ function weekJudge(dateStr) {
         throw new Error("the date string is invalid.")
     }
     let week = pos / (7 * 24 * 60 * 60 * 1000) % 3
+    if(week<0) week+=3
     week = week < 1 ? 'A' : week < 2 ? 'B' : 'C'
-    let weekday = parseInt(pos % (7 * 24 * 60 * 60 * 1000) / (24 * 60 * 60 * 1000)) + 1
-    let time = pos % (7 * 24 * 60 * 60 * 1000) % (24 * 60 * 60 * 1000)
+    let weekday = parseInt(pos >= 0 ? pos % (7 * 24 * 60 * 60 * 1000) / (24 * 60 * 60 * 1000) : (pos % (7 * 24 * 60 * 60 * 1000) + 7 * 24 * 60 * 60 * 1000) / (24 * 60 * 60 * 1000)) + 1
+    let time = pos >= 0 ? pos % (7 * 24 * 60 * 60 * 1000) % (24 * 60 * 60 * 1000) : (pos % (7 * 24 * 60 * 60 * 1000) % (24 * 60 * 60 * 1000) + (24 * 60 * 60 * 1000)) % (24 * 60 * 60 * 1000)
     return { week, weekday, time }
 }
 
