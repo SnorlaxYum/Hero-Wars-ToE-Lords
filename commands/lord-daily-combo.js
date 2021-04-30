@@ -13,7 +13,7 @@ module.exports = {
      * @param {Discord.Message} msg query message
      */
     exec(args, msg) {
-        if (args.length === 0 || args.length === 2) {
+        if (args.length === 0 || args.length === 1) {
             let week, weekday, date
             if (args.length === 0) {
                 date = weekJudge()
@@ -46,7 +46,7 @@ module.exports = {
                 throw e
             }
         } else {
-            timeoutDeleteMessage(msg, "daily combo support only 0 or 2 parameters.", true)
+            timeoutDeleteMessage(msg, "daily combo support only no more than 1 parameters.", true)
         }
     }
 }
