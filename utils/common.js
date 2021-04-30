@@ -225,7 +225,7 @@ function lordVideoWithGivenCombo(combo) {
                         resolve([lines.join('\n'), videoGroups])
                     }
                 }
-                resolve(lines.length === 1 ? [...lines, "no videos found"].joins("\n") : lines.join('\n'))
+                resolve(lines.length === 1 ? [...lines, "no videos found"].join("\n") : lines.join('\n'))
             })
         } catch(e) {
             throw e
