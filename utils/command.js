@@ -29,9 +29,9 @@ function commandCenter(msg) {
 
     if(command === "help") {
         let helpCommands = Array.from(commands.values()).filter(com => !com.isAlias)
-        let descriptionParser = (command, index) => `${index + 1}. \`${prefix}${command.name}\`\n
-        Syntax: \`${prefix}${command.syntax}\`
-        Description: ${command.description}${command.alias ? "\nAlias: " + command.alias.map(al => `\`${prefix+al}\``).join(", ") : ""}`
+        let descriptionParser = (command, index) => `${index + 1}. \`${prefix}${command.name}\`
+        Description: ${command.description}
+        Syntax: \`${prefix}${command.syntax}\`${command.alias ? "\nAlias: " + command.alias.map(al => `\`${prefix+al}\``).join(", ") : ""}${command.example ? `\nExample: \`${prefix+command.example}\`` : ""}`
         if (args.length === 0) {
             let newMsg = new MessageEmbed()
                 .setTitle("Commands Help")
@@ -50,12 +50,22 @@ function commandCenter(msg) {
                     { name: "Description", value: `${command.description}`},
                     { name: "Syntax", value: `\`${prefix}${command.syntax}\``},
                 ]
+
                 if(command.alias) {
                     fields.push({
                         name: "Alias", 
                         value: command.alias.map(al => `\`${prefix+al}\``).join(", ")
                     })
                 }
+
+                if(command.example) {
+                    fields.push({
+                        name: "Example", 
+                        value: `\`${prefix+command.example}\``
+                    })
+                }
+
+                
                 let newMsg = new MessageEmbed()
                 .setTitle(`Command ${command.name}`)
                 .addFields(...fields)

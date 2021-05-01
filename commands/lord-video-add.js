@@ -4,6 +4,7 @@ const { timeoutDeleteMessage, adminPermission } = require("../utils/discord")
 module.exports = {
     name: "lord-video-add",
     syntax: "lord-video-add[+++]<lord>[+++]<combo>[+++]<player>[+++]<attackingCombo>[+++]<point>[+++]<uri>",
+    example: "lv+[+++]Earth[+++]hy,ma,sy,ed,an[+++]Ardor on Youtube[+++]4ear[+++]250[+++]https://youtu.be/m2z0d6JI9L0?t=5",
     alias: ["lordv+", "lv+"],
     description: "Add a lord video",
     /**

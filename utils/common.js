@@ -33,14 +33,19 @@ function deleteLordVideos(uriArray, callback) {
 
 /**
  * judge the position of the day in a ToE cycle
+ * @param {String} dataStr date string
  * @returns {Object}
  */
-function weekJudge() {
-    let pos = (new Date() - new Date('2021-04-12T13:00:00+0800'))
+function weekJudge(dateStr) {
+    let pos = (dateStr && typeof dateStr === "string" && dateStr.length > 0 ? new Date(dateStr) - new Date('2021-04-12T13:00:00+0800') : new Date() - new Date('2021-04-12T13:00:00+0800'))
+    if(Number.isNaN(pos)) {
+        throw new Error("the date string is invalid.")
+    }
     let week = pos / (7 * 24 * 60 * 60 * 1000) % 3
+    if(week<0) week+=3
     week = week < 1 ? 'A' : week < 2 ? 'B' : 'C'
-    let weekday = parseInt(pos % (7 * 24 * 60 * 60 * 1000) / (24 * 60 * 60 * 1000)) + 1
-    let time = pos % (7 * 24 * 60 * 60 * 1000) % (24 * 60 * 60 * 1000)
+    let weekday = parseInt(pos >= 0 ? pos % (7 * 24 * 60 * 60 * 1000) / (24 * 60 * 60 * 1000) : (pos % (7 * 24 * 60 * 60 * 1000) + 7 * 24 * 60 * 60 * 1000) / (24 * 60 * 60 * 1000) % 7) + 1
+    let time = pos >= 0 ? pos % (7 * 24 * 60 * 60 * 1000) % (24 * 60 * 60 * 1000) : (pos % (7 * 24 * 60 * 60 * 1000) % (24 * 60 * 60 * 1000) + (24 * 60 * 60 * 1000)) % (24 * 60 * 60 * 1000)
     return { week, weekday, time }
 }
 
@@ -111,7 +116,7 @@ function comboParser(combo) {
 function dailyComboQuery(week, weekday) {
     return new Promise((resolve, reject) => {
         if (weekday > 5) {
-            resolve('ToE already ended......')
+            resolve('no ToE going on during the specific time......')
         } else {
             db.all(`SELECT lord, combo FROM combo WHERE week=? AND day=?;`, [week, weekday], (err, rows) => {
                 if (err) {

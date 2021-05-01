@@ -3,7 +3,8 @@ const { timeoutDeleteMessage } = require("../utils/discord")
 
 module.exports = {
     name: "lord-daily-combo",
-    syntax: "lord-daily-combo <Week> <WeekDay>",
+    syntax: "lord-daily-combo <timeString>",
+    example: "ld 2021-04-05T13:00:00+0800",
     alias: ["daily-lord", "lord-daily", "lord-combo", "lord-combo-daily", "lord-daily-video", "toe-lords", "toe-daily-lord", "toe-lord-daily", "toe-lord-combo", "ld"],
     description: "Lord combos in a specific lord day (or today if no arg is specified)",
     /**
@@ -12,16 +13,20 @@ module.exports = {
      * @param {Discord.Message} msg query message
      */
     exec(args, msg) {
-        if (args.length === 0 || args.length === 2) {
-            let week, weekday
+        if (args.length <= 1) {
+            let week, weekday, date
             if (args.length === 0) {
-                let date = weekJudge()
+                date = weekJudge()
                 week = date.week
                 weekday = date.weekday
             } else {
-                let [week1, weekday1] = args
-                week = week1
-                weekday = weekday1
+                try {
+                    date = weekJudge(args[0])
+                } catch(e) {
+                    throw e
+                }
+                week = date.week
+                weekday = date.weekday
             }
             
             try {
@@ -41,7 +46,7 @@ module.exports = {
                 throw e
             }
         } else {
-            timeoutDeleteMessage(msg, "daily combo support only 0 or 2 parameters.", true)
+            timeoutDeleteMessage(msg, "daily combo support only no more than 1 parameters.", true)
         }
     }
 }
