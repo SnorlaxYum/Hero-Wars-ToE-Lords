@@ -11,11 +11,11 @@ client.on("ready", () => {
     if (!channels) return
     if (!ready && channels) {
         ready = true
-        new Promise(res => {
+        new Promise(resolve => {
             let pros = []
             channels.forEach((channel, index) => {
                 dailyComboQuery(week, weekday)
-                    .then(resolve => {
+                    .then(res => {
                         if (typeof res === "string") {
                             pros.push(channel.send(res))
                         } else {
