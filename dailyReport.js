@@ -11,22 +11,38 @@ client.on("ready", () => {
     if (!channels) return
     if (!ready && channels) {
         ready = true
-        channels.forEach(channel => {
-            dailyComboQuery(week, weekday)
-                .then(res => {
-                    if (typeof res === "string") {
-                        channel.send(res).then(process.exit)
-                    } else {
-                        let pros = [channel.send(res[0] + '\n' + res[1][0].join('\n'))]
-                        for (let i = 1; i < res[1].length; i++) {
-                            pros.push(channel.send(res[1][i].join('\n')))
+        new Promise(res => {
+            let pros = []
+            channels.forEach((channel, index) => {
+                dailyComboQuery(week, weekday)
+                    .then(resolve => {
+                        if (typeof res === "string") {
+                            pros.push(channel.send(res))
+                        } else {
+                            pros.push(channel.send(res[0] + '\n' + res[1][0].join('\n')))
+                            for (let i = 1; i < res[1].length; i++) {
+                                pros.push(channel.send(res[1][i].join('\n')))
+                            }
                         }
-                        Promise.all(pros).then(process.exit)
-                    }
-                }, rej => {
-                    channel.send(rej).then(process.exit)
-                })
-                .catch(e => console.error(e))
+                        if(index === channels.length-1) {
+                            resolve(pros)
+                        }
+                    }, rej => {
+                        pros.push(channel.send(rej))
+                        if(index === channels.length-1) {
+                            resolve(pros)
+                        }
+                    })
+                    .catch(e => {
+                        console.error(e)
+                        pros.push(channel.send("An internal error happened."))
+                        if(index === channels.length-1) {
+                            resolve(pros)
+                        }
+                    })
+            })
+        }).then(pros => {
+            Promise.all(pros).then(process.exit)
         })
     }
 })
